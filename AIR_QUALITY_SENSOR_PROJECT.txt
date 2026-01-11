@@ -1,0 +1,656 @@
+﻿# Wearable Air Quality Sensor — Project Brief
+
+## Project Overview
+
+A small wearable air quality sensor that connects to a phone via Bluetooth Low Energy (BLE). It monitors CO2, VOCs, NOx, temperature, and humidity, then sends data to a mobile app for visualization and alerts.
+
+**Form Factor:** Badge/pendant size (~60-70mm)
+**Target Battery Life:** 5-7 days on 500mAh LiPo (with smart power management)
+
+---
+
+## Hardware Components (Phased BOM)
+
+### Phase 1: Core CO2 Sensing (~$61)
+| Component | Part | Price | Notes |
+|-----------|------|-------|-------|
+| MCU | Seeed XIAO ESP32-C3 | $4.99 | RISC-V, BLE 5.0, USB-C, 21x17.5mm |
+| CO2 Sensor | Adafruit SCD41 Breakout | $49.95 | True NDIR CO2 + temp + humidity, I2C addr: 0x62 |
+| Cable | STEMMA QT to male headers 150mm | $1.50 | Connects sensor to breadboard |
+| Cable | USB-C data cable | $5.00 | For programming |
+
+### Phase 2: VOC Sensing (~$16)
+| Component | Part | Price | Notes |
+|-----------|------|-------|-------|
+| VOC Sensor | Adafruit SGP41 Breakout | $14.95 | VOC Index + NOx Index, I2C addr: 0x59 |
+| Cable | STEMMA QT cable 100mm | $0.95 | Daisy-chain sensors |
+
+### Phase 3: Portable Power (~$12)
+| Component | Part | Price | Notes |
+|-----------|------|-------|-------|
+| Battery | LiPo 3.7V 500mAh (503035) | $5.95 | 35x30x5mm |
+| Charger | Adafruit LiPo Charger BFF | $4.95 | USB-C, fits XIAO form factor |
+| Cable | JST-PH 2-pin | $1.50 | Battery connection |
+
+### Phase 4: Enclosure & Display (~$20)
+| Component | Part | Price | Notes |
+|-----------|------|-------|-------|
+| Display | SSD1306 OLED 0.96" 128x64 I2C | $6.95 | I2C addr: 0x3C |
+| Enclosure | 3D printed PLA | $8.00 | Custom design with vents |
+| Hardware | M2 screws + lanyard clip | $5.00 | Mounting |
+
+**Total: ~$109**
+
+---
+
+## Wiring Diagram
+
+```
+                                    3.3V
+                                     │
+              ┌──────────────────────┼──────────────────────┐
+              │                      │                      │
+         ┌────┴────┐            ┌────┴────┐            ┌────┴────┐
+         │  SCD41  │            │  SGP41  │            │ SSD1306 │
+         │  0x62   │────────────│  0x59   │────────────│  0x3C   │
+         │ CO2/T/H │  STEMMA QT │ VOC/NOx │  STEMMA QT │  OLED   │
+         └────┬────┘            └────┬────┘            └────┬────┘
+              │                      │                      │
+              └──────────────────────┴──────────────────────┤
+                                                            │
+        ┌───────────────┐                                   │
+        │  XIAO ESP32-C3│                                   │
+        │               │                                   │
+        │  GPIO6 = SDA  │───────────────────────────────────┤
+        │  GPIO7 = SCL  │───────────────────────────────────┤
+        │               │                                   │
+        │  3.3V  ───────┼───────────────────────────────────┘
+        │  GND   ───────┼───────────────────────────────────┐
+        └───────────────┘                                   │
+                                                           GND
+
+I2C Bus: All sensors share SDA/SCL lines (daisy-chained via STEMMA QT)
+Pull-ups: Built into breakout boards (4.7kΩ)
+```
+
+### XIAO ESP32-C3 Pinout
+| Pin | Function | Connected To |
+|-----|----------|--------------|
+| GPIO6 | I2C SDA | All sensors (shared bus) |
+| GPIO7 | I2C SCL | All sensors (shared bus) |
+| 3.3V | Power | Sensors |
+| GND | Ground | Sensors |
+| 5V | USB power in | LiPo charger |
+| BAT | Battery voltage | LiPo (via charger) |
+
+---
+
+## Sensor Specifications
+
+### SCD41 (CO2 + Temperature + Humidity)
+- **I2C Address:** 0x62
+- **CO2 Range:** 400-5000 ppm
+- **CO2 Accuracy:** ±(40 ppm + 5%)
+- **Temperature Accuracy:** ±0.8°C
+- **Humidity Accuracy:** ±6% RH
+- **Measurement Interval:** 5 seconds (periodic mode), 30 seconds (low-power mode)
+- **Power (periodic):** 15-18 mA while measuring
+- **Power (low-power single-shot):** ~0.4 mA average at 1 reading/30s
+- **Library:** Adafruit_SCD4x or Sensirion Arduino library
+
+### SGP41 (VOC + NOx)
+- **I2C Address:** 0x59
+- **VOC Index Range:** 0-500 (0=clean, 500=very polluted)
+- **NOx Index Range:** 0-500
+- **Conditioning Time:** ~60 seconds on cold start
+- **Power (active):** ~3 mA continuous (heater must stay warm for accuracy)
+- **Power (low-power conditioning):** ~0.5 mA (keeps heater warm, no readings)
+- **Library:** Sensirion Gas Index Algorithm + SGP41 Arduino library
+- **Note:** Requires temperature/humidity compensation from SCD41
+
+### SSD1306 OLED Display
+- **I2C Address:** 0x3C (sometimes 0x3D)
+- **Resolution:** 128x64 pixels
+- **Power:** 10-15 mA at 50% pixels lit, <0.5 mA when off
+- **Library:** Adafruit_SSD1306 or U8g2
+
+---
+
+## Power Management System
+
+### Operating Modes
+
+The device has three power modes that switch automatically based on context:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                       POWER MODE OVERVIEW                        │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  IDLE MODE (default, no phone connected)                         │
+│  ────────────────────────────────────────                        │
+│  • Measurement interval: 60 seconds                              │
+│  • SCD41: Low-power single-shot mode                             │
+│  • SGP41: Low-power conditioning (heater warm, no reads)         │
+│  • BLE: Slow advertising (1000ms interval)                       │
+│  • Display: OFF                                                  │
+│  • Average current: ~3-4 mA                                      │
+│  • Runtime on 500mAh: ~125-167 hours (5-7 days)                  │
+│                                                                  │
+│  CONNECTED MODE (phone app connected via BLE)                    │
+│  ──────────────────────────────────────────                      │
+│  • Measurement interval: 10 seconds                              │
+│  • SCD41: Periodic measurement mode                              │
+│  • SGP41: Active measurement with compensation                   │
+│  • BLE: Connected, notify on new readings                        │
+│  • Display: ON (optional, can be toggled)                        │
+│  • Average current: ~15-20 mA (display off) / ~25-30 mA (on)     │
+│  • Runtime on 500mAh: ~17-33 hours                               │
+│                                                                  │
+│  ALERT MODE (threshold exceeded)                                 │
+│  ────────────────────────────────                                │
+│  • Triggered when: CO2 > 1500 ppm OR VOC > 400                   │
+│  • Measurement interval: 5 seconds (faster tracking)             │
+│  • LED blink or buzzer alert                                     │
+│  • BLE: Send push notification to phone                          │
+│  • Display: ON, showing warning                                  │
+│  • Returns to previous mode when readings normalize              │
+│  • Average current: ~25-35 mA                                    │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Mode Transitions
+
+```
+                    ┌──────────────────┐
+                    │                  │
+                    ▼                  │
+            ┌───────────────┐          │
+    ┌──────►│   IDLE MODE   │──────────┘
+    │       │   (default)   │      Phone disconnects
+    │       └───────┬───────┘
+    │               │
+    │               │ Phone connects via BLE
+    │               ▼
+    │       ┌───────────────┐
+    │       │  CONNECTED    │◄─────────────────┐
+    │       │    MODE       │                  │
+    │       └───────┬───────┘                  │
+    │               │                          │
+    │               │ Threshold exceeded       │ Readings normalize
+    │               ▼                          │
+    │       ┌───────────────┐                  │
+    │       │  ALERT MODE   │──────────────────┘
+    │       │               │
+    │       └───────────────┘
+    │               │
+    │               │ Phone disconnects during alert
+    └───────────────┘ (returns to IDLE after readings normalize)
+```
+
+### Power Consumption Table
+
+| Component | IDLE Mode | CONNECTED Mode | ALERT Mode |
+|-----------|-----------|----------------|------------|
+| ESP32-C3 (avg) | 1.5 mA | 12 mA | 15 mA |
+| SCD41 | 0.5 mA | 3 mA | 5 mA |
+| SGP41 | 0.5 mA | 3 mA | 3 mA |
+| Display | 0 mA | 0-12 mA | 12 mA |
+| Regulator/misc | 1 mA | 2 mA | 2 mA |
+| **TOTAL** | **~3.5 mA** | **~20-32 mA** | **~37 mA** |
+
+### Battery Life Estimates (500mAh)
+
+| Usage Pattern | Estimated Runtime |
+|---------------|-------------------|
+| Always IDLE (no phone use) | 140 hours (~6 days) |
+| IDLE + 2 hrs/day CONNECTED | 100 hours (~4 days) |
+| IDLE + 4 hrs/day CONNECTED | 80 hours (~3.3 days) |
+| Always CONNECTED (display off) | 25-33 hours |
+| Always CONNECTED (display on) | 17-20 hours |
+
+### Implementation Details
+
+#### IDLE Mode Sleep Cycle
+```cpp
+// Pseudocode for IDLE mode
+void idleModeCycle() {
+    // 1. Wake from light sleep
+    esp_sleep_wakeup_cause_t cause = esp_sleep_get_wakeup_cause();
+    
+    // 2. Take single-shot measurement from SCD41
+    scd4x.measureSingleShot();  // Takes ~5 seconds
+    delay(5000);
+    scd4x.readMeasurement();
+    
+    // 3. SGP41 stays in conditioning (no read in IDLE to save power)
+    // Heater stays warm, ready for CONNECTED mode
+    
+    // 4. Check thresholds
+    if (co2 > ALERT_THRESHOLD_CO2) {
+        enterAlertMode();
+        return;
+    }
+    
+    // 5. Update BLE characteristic (even if not connected)
+    updateBLECharacteristics();
+    
+    // 6. Check if phone connected
+    if (bleConnected()) {
+        enterConnectedMode();
+        return;
+    }
+    
+    // 7. Enter light sleep for remaining time
+    esp_sleep_enable_timer_wakeup(55 * 1000000);  // 55 seconds
+    esp_light_sleep_start();
+}
+```
+
+#### CONNECTED Mode Loop
+```cpp
+// Pseudocode for CONNECTED mode
+void connectedModeLoop() {
+    static unsigned long lastRead = 0;
+    
+    if (millis() - lastRead >= 10000) {  // Every 10 seconds
+        lastRead = millis();
+        
+        // 1. Read SCD41 (already in periodic mode)
+        if (scd4x.readMeasurement()) {
+            co2 = scd4x.getCO2();
+            temperature = scd4x.getTemperature();
+            humidity = scd4x.getHumidity();
+        }
+        
+        // 2. Read SGP41 with compensation
+        uint16_t rhTicks = humidityToTicks(humidity);
+        uint16_t tempTicks = temperatureToTicks(temperature);
+        sgp41.measureRawSignals(rhTicks, tempTicks, &vocRaw, &noxRaw);
+        
+        // 3. Run gas index algorithm
+        vocIndex = vocAlgorithm.process(vocRaw);
+        noxIndex = noxAlgorithm.process(noxRaw);
+        
+        // 4. Check thresholds
+        if (co2 > ALERT_THRESHOLD_CO2 || vocIndex > ALERT_THRESHOLD_VOC) {
+            enterAlertMode();
+            return;
+        }
+        
+        // 5. Notify phone via BLE
+        notifyBLECharacteristics();
+        
+        // 6. Update display if enabled
+        if (displayEnabled) {
+            updateDisplay();
+        }
+    }
+    
+    // Check for disconnect
+    if (!bleConnected()) {
+        enterIdleMode();
+    }
+}
+```
+
+#### Mode Transition Functions
+```cpp
+void enterIdleMode() {
+    currentMode = MODE_IDLE;
+    
+    // Slow down BLE advertising
+    BLEDevice::getAdvertising()->setMinInterval(1600);  // 1000ms
+    BLEDevice::getAdvertising()->setMaxInterval(1600);
+    
+    // Put SCD41 in low-power mode
+    scd4x.stopPeriodicMeasurement();
+    
+    // Keep SGP41 heater warm but don't read
+    sgp41.turnHeaterOff();  // Actually keep in conditioning mode
+    
+    // Turn off display
+    display.clearDisplay();
+    display.display();
+    displayEnabled = false;
+}
+
+void enterConnectedMode() {
+    currentMode = MODE_CONNECTED;
+    
+    // Speed up BLE (already connected, but for future reconnects)
+    BLEDevice::getAdvertising()->setMinInterval(160);   // 100ms
+    BLEDevice::getAdvertising()->setMaxInterval(320);   // 200ms
+    
+    // Start SCD41 periodic measurement
+    scd4x.startPeriodicMeasurement();
+    
+    // SGP41 needs ~60s to stabilize if it was in conditioning
+    sgp41ConditioningComplete = false;
+    sgp41ConditioningStart = millis();
+    
+    // Display on (optional based on user preference)
+    displayEnabled = userPreferences.displayOnConnect;
+}
+
+void enterAlertMode() {
+    currentMode = MODE_ALERT;
+    
+    // Faster measurements
+    measurementInterval = 5000;  // 5 seconds
+    
+    // Visual/audio alert
+    if (hasLED) {
+        ledAlertPattern = true;
+    }
+    if (hasBuzzer) {
+        tone(BUZZER_PIN, 2000, 200);
+    }
+    
+    // Turn on display with warning
+    displayEnabled = true;
+    displayWarning = true;
+    
+    // Send push notification via BLE
+    sendAlertNotification();
+}
+```
+
+---
+
+## Air Quality Thresholds
+
+### CO2 (ppm)
+| Level | Range | Color | Action |
+|-------|-------|-------|--------|
+| Excellent | <600 | Green | None |
+| Good | 600-800 | Green | None |
+| Moderate | 800-1000 | Yellow | Consider ventilation |
+| Poor | 1000-1500 | Orange | Open windows |
+| **Alert Threshold** | >1500 | Red | Triggers ALERT mode |
+
+### VOC Index
+| Level | Range | Color | Action |
+|-------|-------|-------|--------|
+| Good | 0-150 | Green | None |
+| Moderate | 150-250 | Yellow | Check for sources |
+| Poor | 250-400 | Orange | Ventilate |
+| **Alert Threshold** | >400 | Red | Triggers ALERT mode |
+
+---
+
+## Firmware Requirements
+
+### Core Functionality
+1. **I2C Communication**
+   - Initialize I2C bus on GPIO6 (SDA) and GPIO7 (SCL)
+   - Scan for devices on startup to verify connections
+   - Handle sensor read errors gracefully
+
+2. **SCD41 Reading**
+   - Start in low-power single-shot mode (IDLE)
+   - Switch to periodic measurement (CONNECTED)
+   - Read CO2, temperature, humidity
+
+3. **SGP41 Reading**
+   - Keep heater warm in conditioning mode (IDLE)
+   - Full measurement with compensation (CONNECTED)
+   - Run Sensirion Gas Index Algorithm
+
+4. **BLE Service**
+   - Advertise device name: "AirSense"
+   - Slow advertising in IDLE, fast when seeking connection
+   - Notify characteristics on new readings
+
+5. **Power Management**
+   - Implement three modes: IDLE, CONNECTED, ALERT
+   - Use esp_light_sleep_start() between readings in IDLE
+   - Automatic mode transitions based on BLE state and thresholds
+
+6. **OLED Display**
+   - Off by default in IDLE
+   - Show readings when connected (user-configurable)
+   - Always on with warning in ALERT mode
+
+### BLE UUIDs
+```
+Service UUID:        0000181A-0000-1000-8000-00805f9b34fb (Environmental Sensing)
+  - CO2:             00002BD2-0000-1000-8000-00805f9b34fb (uint16, ppm)
+  - Temperature:     00002A6E-0000-1000-8000-00805f9b34fb (int16, °C × 100)
+  - Humidity:        00002A6F-0000-1000-8000-00805f9b34fb (uint16, % × 100)
+
+Custom Service UUID: 12345678-1234-5678-1234-56789abcdef0
+  - VOC Index:       12345678-1234-5678-1234-56789abcdef1 (uint16, 0-500)
+  - NOx Index:       12345678-1234-5678-1234-56789abcdef2 (uint16, 0-500)
+  - Power Mode:      12345678-1234-5678-1234-56789abcdef3 (uint8, 0=IDLE,1=CONNECTED,2=ALERT)
+  - Battery %:       12345678-1234-5678-1234-56789abcdef4 (uint8, 0-100)
+```
+
+### PlatformIO Configuration
+```ini
+[env:seeed_xiao_esp32c3]
+platform = espressif32
+board = seeed_xiao_esp32c3
+framework = arduino
+monitor_speed = 115200
+lib_deps =
+    adafruit/Adafruit SCD4x Library@^1.0.0
+    sensirion/Sensirion Gas Index Algorithm@^3.2.1
+    sensirion/Sensirion I2C SGP41@^1.0.0
+    adafruit/Adafruit SSD1306@^2.5.7
+    adafruit/Adafruit GFX Library@^1.11.5
+    h2zero/NimBLE-Arduino@^1.4.0
+```
+
+---
+
+## Mobile App Requirements
+
+### Core Features
+1. **BLE Connection**
+   - Scan for "AirSense" device
+   - Connect and subscribe to notifications
+   - Handle reconnection on disconnect
+   - Show device power mode and battery %
+
+2. **Live Dashboard**
+   - Display all sensor values with color coding
+   - Overall air quality index (composite score)
+   - Update based on device notifications (10s in CONNECTED)
+
+3. **History Charts**
+   - Rolling graph of last 1 hour
+   - Daily/weekly trends (stored locally on phone)
+
+4. **Alerts**
+   - Push notification when device enters ALERT mode
+   - Configurable thresholds (override device defaults)
+
+5. **Power Settings**
+   - Toggle: "Keep display on when connected"
+   - View current power mode
+   - View battery percentage
+
+---
+
+## Development Phases
+
+### Phase 1: Basic Sensor Reading
+1. Set up PlatformIO project for XIAO ESP32-C3
+2. Initialize I2C and scan for devices
+3. Read SCD41 (CO2, temp, humidity)
+4. Print to serial monitor
+5. **Milestone:** See live CO2 readings in serial
+
+### Phase 2: Add VOC Sensor
+1. Add SGP41 library
+2. Implement Gas Index Algorithm
+3. Pass temp/humidity compensation
+4. **Milestone:** CO2 + VOC readings in serial
+
+### Phase 3: BLE Communication
+1. Set up BLE server with characteristics
+2. Advertise as "AirSense"
+3. Send sensor data via notifications
+4. Test with nRF Connect app on phone
+5. **Milestone:** See data in nRF Connect
+
+### Phase 4: Power Management
+1. Implement IDLE/CONNECTED/ALERT modes
+2. Add light sleep in IDLE mode
+3. Implement mode transitions
+4. Test battery life in each mode
+5. **Milestone:** Verified 5+ day runtime in IDLE
+
+### Phase 5: Mobile App
+1. Create React Native / Flutter / Web app
+2. Implement BLE scanning and connection
+3. Build dashboard UI
+4. Add history storage
+5. **Milestone:** Working phone app
+
+### Phase 6: Display & Polish
+1. Add OLED display code
+2. Design display layouts
+3. Add battery monitoring (if fuel gauge)
+4. Final power optimization
+5. **Milestone:** Fully functional prototype
+
+### Phase 7: Enclosure
+1. Design 3D printable case
+2. Include ventilation holes for sensors
+3. Mount points for PCBs
+4. Lanyard/clip attachment
+5. **Milestone:** Complete wearable device
+
+---
+
+## Key Technical Notes
+
+### SCD41 Low-Power Single-Shot Mode
+```cpp
+// For IDLE mode - much lower power than periodic
+scd4x.stopPeriodicMeasurement();
+delay(500);
+
+// Single measurement takes ~5 seconds
+scd4x.measureSingleShot();
+delay(5000);
+
+if (scd4x.readMeasurement()) {
+    co2 = scd4x.getCO2();
+    temp = scd4x.getTemperature();
+    humidity = scd4x.getHumidity();
+}
+```
+
+### SGP41 Temperature/Humidity Compensation
+```cpp
+// Convert SCD41 readings to SGP41 tick format
+uint16_t humidityToTicks(float rh) {
+    return (uint16_t)(rh * 65535 / 100);
+}
+
+uint16_t temperatureToTicks(float t) {
+    return (uint16_t)((t + 45) * 65535 / 175);
+}
+```
+
+### ESP32-C3 Light Sleep
+```cpp
+// Configure wake sources
+esp_sleep_enable_timer_wakeup(55 * 1000000);  // 55 seconds
+esp_sleep_enable_gpio_wakeup();  // Optional: button to wake
+
+// Enter light sleep (BLE stack stays alive but not advertising)
+esp_light_sleep_start();
+
+// Execution resumes here after wake
+```
+
+### NimBLE Power Optimization
+```cpp
+// Use NimBLE instead of Bluedroid (much lower power)
+#include <NimBLEDevice.h>
+
+// In IDLE mode, slow advertising saves significant power
+NimBLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
+pAdvertising->setMinInterval(1600);  // 1000ms in 0.625ms units
+pAdvertising->setMaxInterval(1600);
+```
+
+---
+
+## File Structure (Suggested)
+
+```
+air-quality-sensor/
+├── firmware/
+│   ├── platformio.ini
+│   ├── src/
+│   │   ├── main.cpp
+│   │   ├── config.h           # Thresholds, pins, UUIDs
+│   │   ├── sensors.h
+│   │   ├── sensors.cpp
+│   │   ├── ble_service.h
+│   │   ├── ble_service.cpp
+│   │   ├── power_manager.h    # Mode management
+│   │   ├── power_manager.cpp
+│   │   ├── display.h
+│   │   └── display.cpp
+│   └── lib/
+├── app/
+│   ├── (React Native or Flutter project)
+│   └── ...
+├── enclosure/
+│   ├── case.stl
+│   └── case.scad (or .f3d)
+└── docs/
+    ├── wiring.png
+    └── bom.xlsx
+```
+
+---
+
+## Resources & Links
+
+### Vendor Links (Phase 1)
+- XIAO ESP32-C3: https://www.seeedstudio.com/Seeed-XIAO-ESP32C3-p-5431.html
+- SCD41 Breakout: https://www.adafruit.com/product/5190
+- STEMMA QT Cable: https://www.adafruit.com/product/4397
+
+### Documentation
+- SCD4x Datasheet: https://sensirion.com/media/documents/E0F04247/631EF271/CD_DS_SCD40_SCD41_Datasheet_D1.pdf
+- SGP41 Datasheet: https://sensirion.com/media/documents/5FE8673C/61E96F50/Sensirion_Gas_Sensors_Datasheet_SGP41.pdf
+- ESP32-C3 Datasheet: https://www.espressif.com/sites/default/files/documentation/esp32-c3_datasheet_en.pdf
+
+### Libraries
+- Adafruit SCD4x: https://github.com/adafruit/Adafruit_SCD4x
+- Sensirion SGP41: https://github.com/Sensirion/arduino-i2c-sgp41
+- Sensirion Gas Index: https://github.com/Sensirion/gas-index-algorithm
+- NimBLE-Arduino: https://github.com/h2zero/NimBLE-Arduino
+
+---
+
+## Quick Start Commands
+
+```bash
+# Install PlatformIO CLI (if not using VS Code extension)
+pip install platformio
+
+# Create project
+mkdir air-quality-sensor && cd air-quality-sensor
+pio init -b seeed_xiao_esp32c3
+
+# Build and upload
+pio run -t upload
+
+# Monitor serial output
+pio device monitor
+```
+
+---
+
+*Project brief generated from research and planning session. Includes smart power management for 5-7 day battery life. Ready for implementation in Claude Code.*
+
