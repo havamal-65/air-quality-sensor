@@ -62,12 +62,31 @@ pio device monitor     # View serial output
 
 ### Development Phases
 
-- **Phase 1:** Basic sensor reading (SCD41)
-- **Phase 2:** Add VOC sensor (SGP41)
-- **Phase 3:** BLE communication
-- **Phase 4:** Mobile app
-- **Phase 5:** Display & polish
+- **Phase 1:** ✅ Basic sensor reading (SCD41) - COMPLETE
+- **Phase 2:** ✅ BLE communication with mobile app - COMPLETE
+- **Phase 3:** Add VOC sensor (SGP41) - READY TO START
+- **Phase 4:** Battery power system
+- **Phase 5:** OLED display
 - **Phase 6:** Enclosure design
+
+### Current Status (Phase 2 Complete)
+
+**Working Features:**
+- ✅ SCD41 CO2/Temperature/Humidity sensor readings
+- ✅ BLE advertising and communication
+- ✅ React Native mobile app with Expo
+- ✅ Real-time data transmission over BLE
+- ✅ Web demo deployed to GitHub Pages
+- ✅ Historical data charts and alerts
+- ✅ Demo mode for testing without hardware
+
+**Live Demos:**
+- Web App: https://havamal-65.github.io/air-quality-sensor (demo mode)
+- Mobile: Use Expo Go to scan QR code for real BLE connection
+
+**Next Steps:**
+- Connect SGP41 VOC/NOx sensor (Phase 3)
+- See `firmware/PHASE2-BLE-INSTRUCTIONS.md` for detailed setup
 
 ## Air Quality Thresholds
 

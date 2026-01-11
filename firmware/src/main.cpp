@@ -1,5 +1,5 @@
 /**
- * AirSense Firmware - Phase 1: Basic SCD41 Sensor Reading
+ * AirSense Firmware - Phase 2: SCD41 Sensor + BLE Communication
  *
  * Hardware:
  * - Seeed XIAO ESP32-C3
@@ -8,22 +8,69 @@
  * I2C Pins:
  * - SDA: GPIO6
  * - SCL: GPIO7
+ *
+ * Features:
+ * - Reads CO2, temperature, and humidity from SCD41
+ * - Broadcasts data via BLE
+ * - Compatible with AirSense mobile app
  */
 
 #include <Arduino.h>
 #include <Wire.h>
 #include <SensirionI2CScd4x.h>
+#include <BLEDevice.h>
+#include <BLEServer.h>
+#include <BLEUtils.h>
+#include <BLE2902.h>
 
 // I2C Configuration
 #define I2C_SDA 6
 #define I2C_SCL 7
 
+// BLE UUIDs (must match app constants)
+#define DEVICE_NAME "AirSense"
+
+// Environmental Sensing Service (standard)
+#define ENVIRONMENTAL_SERVICE_UUID "0000181A-0000-1000-8000-00805f9b34fb"
+#define CO2_CHARACTERISTIC_UUID "00002BD2-0000-1000-8000-00805f9b34fb"
+#define TEMPERATURE_CHARACTERISTIC_UUID "00002A6E-0000-1000-8000-00805f9b34fb"
+#define HUMIDITY_CHARACTERISTIC_UUID "00002A6F-0000-1000-8000-00805f9b34fb"
+
+// Custom service for VOC/NOx (placeholder for Phase 3)
+#define CUSTOM_SERVICE_UUID "12345678-1234-5678-1234-56789abcdef0"
+#define VOC_CHARACTERISTIC_UUID "12345678-1234-5678-1234-56789abcdef1"
+#define NOX_CHARACTERISTIC_UUID "12345678-1234-5678-1234-56789abcdef2"
+
 // Sensor object
 SensirionI2CScd4x scd4x;
+
+// BLE objects
+BLEServer *pServer = NULL;
+BLECharacteristic *pCO2Characteristic = NULL;
+BLECharacteristic *pTemperatureCharacteristic = NULL;
+BLECharacteristic *pHumidityCharacteristic = NULL;
+BLECharacteristic *pVOCCharacteristic = NULL;
+BLECharacteristic *pNOxCharacteristic = NULL;
+
+bool deviceConnected = false;
+bool oldDeviceConnected = false;
 
 // Timing
 unsigned long lastReading = 0;
 const unsigned long READING_INTERVAL = 5000; // 5 seconds
+
+// BLE Server Callbacks
+class MyServerCallbacks : public BLEServerCallbacks {
+  void onConnect(BLEServer *pServer) {
+    deviceConnected = true;
+    Serial.println("📱 Device connected!");
+  }
+
+  void onDisconnect(BLEServer *pServer) {
+    deviceConnected = false;
+    Serial.println("📱 Device disconnected");
+  }
+};
 
 void printUint16Hex(uint16_t value) {
   Serial.print(value < 4096 ? "0" : "");
@@ -40,6 +87,70 @@ void printSerialNumber(uint16_t serial0, uint16_t serial1, uint16_t serial2) {
   Serial.println();
 }
 
+void initializeBLE() {
+  Serial.println("\n📡 Initializing BLE...");
+
+  // Create the BLE Device
+  BLEDevice::init(DEVICE_NAME);
+
+  // Create the BLE Server
+  pServer = BLEDevice::createServer();
+  pServer->setCallbacks(new MyServerCallbacks());
+
+  // Create Environmental Sensing Service
+  BLEService *pEnvironmentalService = pServer->createService(ENVIRONMENTAL_SERVICE_UUID);
+
+  // CO2 Characteristic (uint16, ppm)
+  pCO2Characteristic = pEnvironmentalService->createCharacteristic(
+      CO2_CHARACTERISTIC_UUID,
+      BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
+  pCO2Characteristic->addDescriptor(new BLE2902());
+
+  // Temperature Characteristic (int16, 0.01°C units)
+  pTemperatureCharacteristic = pEnvironmentalService->createCharacteristic(
+      TEMPERATURE_CHARACTERISTIC_UUID,
+      BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
+  pTemperatureCharacteristic->addDescriptor(new BLE2902());
+
+  // Humidity Characteristic (uint16, 0.01% units)
+  pHumidityCharacteristic = pEnvironmentalService->createCharacteristic(
+      HUMIDITY_CHARACTERISTIC_UUID,
+      BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
+  pHumidityCharacteristic->addDescriptor(new BLE2902());
+
+  // Create Custom Service for VOC/NOx
+  BLEService *pCustomService = pServer->createService(CUSTOM_SERVICE_UUID);
+
+  // VOC Characteristic (uint16, index)
+  pVOCCharacteristic = pCustomService->createCharacteristic(
+      VOC_CHARACTERISTIC_UUID,
+      BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
+  pVOCCharacteristic->addDescriptor(new BLE2902());
+
+  // NOx Characteristic (uint16, index)
+  pNOxCharacteristic = pCustomService->createCharacteristic(
+      NOX_CHARACTERISTIC_UUID,
+      BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
+  pNOxCharacteristic->addDescriptor(new BLE2902());
+
+  // Start services
+  pEnvironmentalService->start();
+  pCustomService->start();
+
+  // Start advertising
+  BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
+  pAdvertising->addServiceUUID(ENVIRONMENTAL_SERVICE_UUID);
+  pAdvertising->addServiceUUID(CUSTOM_SERVICE_UUID);
+  pAdvertising->setScanResponse(true);
+  pAdvertising->setMinPreferred(0x06);
+  pAdvertising->setMinPreferred(0x12);
+  BLEDevice::startAdvertising();
+
+  Serial.println("✅ BLE initialized and advertising");
+  Serial.print("📡 Device name: ");
+  Serial.println(DEVICE_NAME);
+}
+
 void setup() {
   Serial.begin(115200);
   while (!Serial) {
@@ -47,8 +158,11 @@ void setup() {
   }
 
   Serial.println("\n=================================");
-  Serial.println("AirSense - Phase 1: SCD41 Test");
+  Serial.println("AirSense - Phase 2: SCD41 + BLE");
   Serial.println("=================================\n");
+
+  // Initialize BLE
+  initializeBLE();
 
   // Initialize I2C
   Wire.begin(I2C_SDA, I2C_SCL);
@@ -97,8 +211,8 @@ void setup() {
     }
   }
 
-  Serial.println("SCD41 initialized successfully!");
-  Serial.println("Waiting for first measurement (5 seconds)...\n");
+  Serial.println("✅ SCD41 initialized successfully!");
+  Serial.println("⏳ Waiting for first measurement (5 seconds)...\n");
 
   delay(5000); // Wait for first measurement
 }
@@ -106,6 +220,19 @@ void setup() {
 void loop() {
   unsigned long currentMillis = millis();
 
+  // Handle BLE reconnection
+  if (!deviceConnected && oldDeviceConnected) {
+    delay(500); // Give the bluetooth stack time to get ready
+    pServer->startAdvertising();
+    Serial.println("📡 Restarting advertising...");
+    oldDeviceConnected = deviceConnected;
+  }
+
+  if (deviceConnected && !oldDeviceConnected) {
+    oldDeviceConnected = deviceConnected;
+  }
+
+  // Read and broadcast sensor data
   if (currentMillis - lastReading >= READING_INTERVAL) {
     lastReading = currentMillis;
 
@@ -127,7 +254,7 @@ void loop() {
     }
 
     if (!isDataReady) {
-      Serial.println("Data not ready yet...");
+      Serial.println("⏳ Data not ready yet...");
       return;
     }
 
@@ -137,7 +264,7 @@ void loop() {
       errorToString(error, errorMessage, 256);
       Serial.println(errorMessage);
     } else if (co2 == 0) {
-      Serial.println("Invalid sample detected (CO2 = 0), skipping...");
+      Serial.println("⚠️  Invalid sample detected (CO2 = 0), skipping...");
     } else {
       // Print readings
       Serial.println("=================================");
@@ -152,21 +279,61 @@ void loop() {
       Serial.print("Humidity: ");
       Serial.print(humidity, 1);
       Serial.println(" %RH");
-      Serial.println("=================================\n");
 
       // Air quality assessment
       if (co2 < 600) {
-        Serial.println("Air Quality: EXCELLENT");
+        Serial.println("Air Quality: EXCELLENT ✨");
       } else if (co2 < 800) {
-        Serial.println("Air Quality: GOOD");
+        Serial.println("Air Quality: GOOD ✓");
       } else if (co2 < 1000) {
-        Serial.println("Air Quality: MODERATE - Consider ventilation");
+        Serial.println("Air Quality: MODERATE ⚠️  - Consider ventilation");
       } else if (co2 < 1500) {
-        Serial.println("Air Quality: POOR - Open windows!");
+        Serial.println("Air Quality: POOR ⚠️  - Open windows!");
       } else {
-        Serial.println("Air Quality: BAD - Ventilate immediately!");
+        Serial.println("Air Quality: BAD ❌ - Ventilate immediately!");
       }
-      Serial.println();
+
+      // BLE connection status
+      if (deviceConnected) {
+        Serial.println("📱 Broadcasting to connected device");
+      } else {
+        Serial.println("📡 Ready for BLE connection");
+      }
+      Serial.println("=================================\n");
+
+      // Update BLE characteristics if device is connected
+      if (deviceConnected) {
+        // CO2 (uint16, little endian)
+        uint8_t co2Data[2];
+        co2Data[0] = co2 & 0xFF;
+        co2Data[1] = (co2 >> 8) & 0xFF;
+        pCO2Characteristic->setValue(co2Data, 2);
+        pCO2Characteristic->notify();
+
+        // Temperature (int16, 0.01°C units, little endian)
+        int16_t tempValue = (int16_t)(temperature * 100);
+        uint8_t tempData[2];
+        tempData[0] = tempValue & 0xFF;
+        tempData[1] = (tempValue >> 8) & 0xFF;
+        pTemperatureCharacteristic->setValue(tempData, 2);
+        pTemperatureCharacteristic->notify();
+
+        // Humidity (uint16, 0.01% units, little endian)
+        uint16_t humValue = (uint16_t)(humidity * 100);
+        uint8_t humData[2];
+        humData[0] = humValue & 0xFF;
+        humData[1] = (humValue >> 8) & 0xFF;
+        pHumidityCharacteristic->setValue(humData, 2);
+        pHumidityCharacteristic->notify();
+
+        // VOC and NOx placeholders (Phase 3 will add SGP41 sensor)
+        // For now, send zero values
+        uint8_t zeroData[2] = {0, 0};
+        pVOCCharacteristic->setValue(zeroData, 2);
+        pVOCCharacteristic->notify();
+        pNOxCharacteristic->setValue(zeroData, 2);
+        pNOxCharacteristic->notify();
+      }
     }
   }
 }
