@@ -40,6 +40,20 @@ export default function ConnectionScreen() {
         return;
       }
 
+      // Check if using Web Bluetooth (browser)
+      if (bleService.isWebBluetoothMode()) {
+        // For Web Bluetooth, we need user interaction to trigger device picker
+        // Show a placeholder device that will trigger the picker on connect
+        setDevices([{
+          id: 'web-bluetooth-trigger',
+          name: 'Click to select AirSense device',
+          rssi: null,
+        } as any]);
+        setIsScanning(false);
+        return;
+      }
+
+      // Native BLE scanning
       await bleService.scanForDevices(
         (device) => {
           setDevices((prev) => {

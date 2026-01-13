@@ -1,7 +1,8 @@
 import { BLE_CONFIG } from '../constants/ble';
 import { SensorReading } from '../types/sensor';
+import { WebBluetoothService } from './webBluetooth';
 
-// Platform check - BLE only works on native mobile
+// Platform check
 const IS_WEB = typeof navigator !== 'undefined' && navigator.product === 'ReactNative' ? false : true;
 
 // Dynamic import for BLE (only on native)
@@ -24,12 +25,28 @@ class BLEService {
   private manager: any;
   private device: any = null;
   private isConnecting = false;
-  private demoMode = IS_WEB || !BleManager; // Enable demo mode on web or if BLE unavailable
+  private demoMode = false;
   private demoInterval: any = null;
+  private webBluetooth: WebBluetoothService | null = null;
+  private useWebBluetooth = false;
 
   constructor() {
-    if (!this.demoMode && BleManager) {
+    if (IS_WEB) {
+      // Try to use Web Bluetooth on web platforms
+      this.webBluetooth = new WebBluetoothService();
+      this.useWebBluetooth = this.webBluetooth.isSupported();
+
+      if (!this.useWebBluetooth) {
+        console.warn('Web Bluetooth not supported, using demo mode');
+        this.demoMode = true;
+      } else {
+        console.log('Web Bluetooth is supported!');
+      }
+    } else if (BleManager) {
       this.manager = new BleManager();
+    } else {
+      console.warn('No BLE support available, using demo mode');
+      this.demoMode = true;
     }
   }
 
@@ -37,6 +54,11 @@ class BLEService {
     if (this.demoMode) {
       return true; // Demo mode always ready
     }
+
+    if (this.useWebBluetooth) {
+      return await this.webBluetooth!.initializeBluetooth();
+    }
+
     const state = await this.manager.state();
     if (state !== 'PoweredOn') {
       return false;
@@ -57,6 +79,13 @@ class BLEService {
           rssi: -45,
         });
       }, 1000);
+      return Promise.resolve();
+    }
+
+    if (this.useWebBluetooth) {
+      // Web Bluetooth doesn't have a scan mode
+      // User must click a button to trigger device picker
+      // This is handled in connectToDevice instead
       return Promise.resolve();
     }
 
@@ -86,7 +115,7 @@ class BLEService {
   }
 
   stopScan(): void {
-    if (!this.demoMode && this.manager) {
+    if (!this.demoMode && !this.useWebBluetooth && this.manager) {
       this.manager.stopDeviceScan();
     }
   }
@@ -107,6 +136,20 @@ class BLEService {
       };
       this.isConnecting = false;
       return this.device;
+    }
+
+    if (this.useWebBluetooth) {
+      try {
+        // For Web Bluetooth, request device (shows browser picker)
+        const device = await this.webBluetooth!.requestDevice();
+        await this.webBluetooth!.connectToDevice();
+        this.device = device;
+        this.isConnecting = false;
+        return device;
+      } catch (error) {
+        this.isConnecting = false;
+        throw error;
+      }
     }
 
     try {
@@ -131,6 +174,12 @@ class BLEService {
       return;
     }
 
+    if (this.useWebBluetooth) {
+      await this.webBluetooth!.disconnect();
+      this.device = null;
+      return;
+    }
+
     if (this.device) {
       await this.device.cancelConnection();
       this.device = null;
@@ -147,6 +196,11 @@ class BLEService {
     if (this.demoMode) {
       // Demo mode - generate realistic sensor data
       this.startDemoDataGenerator(onDataReceived);
+      return;
+    }
+
+    if (this.useWebBluetooth) {
+      await this.webBluetooth!.subscribeToSensorData(onDataReceived);
       return;
     }
 
@@ -305,15 +359,25 @@ class BLEService {
   }
 
   isDeviceConnected(): boolean {
+    if (this.useWebBluetooth) {
+      return this.webBluetooth!.isDeviceConnected();
+    }
     return this.device !== null;
   }
 
   getDevice(): any {
+    if (this.useWebBluetooth) {
+      return this.webBluetooth!.getDevice();
+    }
     return this.device;
   }
 
   isDemoMode(): boolean {
     return this.demoMode;
+  }
+
+  isWebBluetoothMode(): boolean {
+    return this.useWebBluetooth;
   }
 
   destroy(): void {
@@ -322,6 +386,10 @@ class BLEService {
       if (this.demoInterval) {
         clearInterval(this.demoInterval);
       }
+      return;
+    }
+    if (this.useWebBluetooth) {
+      this.webBluetooth!.disconnect();
       return;
     }
     if (this.device) {

@@ -5,7 +5,7 @@ import { LineChart } from 'react-native-chart-kit';
 import { Dimensions } from 'react-native';
 import { format } from 'date-fns';
 
-type TimeRange = '1H' | '6H' | '24H' | '7D' | '30D';
+type TimeRange = '5S' | '30S' | '1M' | '5M' | '15M' | '30M' | '1H' | '6H' | '12H' | '24H' | '3D' | '7D' | '14D' | '30D' | '90D' | '6Mo' | '1Y' | '5Y';
 
 export default function HistoryScreen() {
   const [selectedRange, setSelectedRange] = useState<TimeRange>('24H');
@@ -16,11 +16,24 @@ export default function HistoryScreen() {
   const getFilteredData = () => {
     const now = Date.now();
     const ranges: Record<TimeRange, number> = {
+      '5S': 5000,
+      '30S': 30000,
+      '1M': 60000,
+      '5M': 300000,
+      '15M': 900000,
+      '30M': 1800000,
       '1H': 3600000,
       '6H': 21600000,
+      '12H': 43200000,
       '24H': 86400000,
+      '3D': 259200000,
       '7D': 604800000,
+      '14D': 1209600000,
       '30D': 2592000000,
+      '90D': 7776000000,
+      '6Mo': 15552000000,
+      '1Y': 31536000000,
+      '5Y': 157680000000,
     };
 
     const cutoff = now - ranges[selectedRange];
@@ -56,19 +69,49 @@ export default function HistoryScreen() {
 
     const values = filteredData.map((r) => r[metric]);
     const stats = calculateStats(values);
-    const labels = filteredData.map((r) =>
-      selectedRange === '7D' || selectedRange === '30D'
-        ? format(r.timestamp, 'MM/dd')
-        : format(r.timestamp, 'HH:mm')
-    );
+
+    // Determine label format based on time range
+    const getLabelFormat = () => {
+      const shortRanges = ['5S', '30S', '1M', '5M', '15M', '30M'];
+      const hourRanges = ['1H', '6H', '12H', '24H'];
+      const dayRanges = ['3D', '7D', '14D', '30D'];
+      const longRanges = ['90D', '6Mo', '1Y', '5Y'];
+
+      if (shortRanges.includes(selectedRange)) {
+        return 'HH:mm:ss';
+      } else if (hourRanges.includes(selectedRange)) {
+        return 'HH:mm';
+      } else if (dayRanges.includes(selectedRange)) {
+        return 'MM/dd HH:mm';
+      } else {
+        return 'MM/dd/yy';
+      }
+    };
+
+    const labels = filteredData.map((r) => format(r.timestamp, getLabelFormat()));
+
+    // Calculate Y-axis scale with minimum range of 100
+    const minValue = Math.min(...values);
+    const maxValue = Math.max(...values);
+    const dataRange = maxValue - minValue;
+
+    // Ensure minimum vertical range of 100 units
+    const minRange = 100;
+    const range = Math.max(dataRange, minRange);
+
+    // Center the data in the range
+    const midPoint = (maxValue + minValue) / 2;
+    const yAxisMin = Math.max(0, Math.floor(midPoint - range / 2));
+    const yAxisMax = Math.ceil(midPoint + range / 2);
 
     const chartData = {
       labels: labels.filter((_, i) => i % Math.floor(filteredData.length / 5) === 0),
       datasets: [
         {
-          data: values,
+          data: [yAxisMin, ...values, yAxisMax],
           color: (opacity = 1) => color,
-          strokeWidth: 2,
+          strokeWidth: 3,
+          withDots: false,
         },
       ],
     };
@@ -80,23 +123,36 @@ export default function HistoryScreen() {
           data={chartData}
           width={screenWidth}
           height={220}
+          yAxisSuffix=""
+          yAxisInterval={1}
+          fromZero={false}
+          segments={4}
+          yAxisLabel=""
+          yLabelsOffset={0}
+          formatYLabel={(value) => Math.round(Number(value)).toString()}
           chartConfig={{
             backgroundColor: '#1E1E1E',
             backgroundGradientFrom: '#1E1E1E',
             backgroundGradientTo: '#1E1E1E',
-            decimalPlaces: 0,
+            decimalPlaces: metric === 'temperature' ? 1 : 0,
             color: (opacity = 1) => color,
             labelColor: (opacity = 1) => `rgba(176, 176, 176, ${opacity})`,
             propsForDots: {
-              r: '3',
+              r: '4',
               strokeWidth: '2',
+              fill: color,
+            },
+            propsForBackgroundLines: {
+              strokeDasharray: '',
+              stroke: 'rgba(176, 176, 176, 0.1)',
             },
           }}
-          bezier
           style={styles.chart}
           withInnerLines={true}
           withOuterLines={true}
           withVerticalLines={false}
+          withHorizontalLines={true}
+          withDots={true}
         />
         <View style={styles.stats}>
           <View style={styles.stat}>
@@ -116,10 +172,22 @@ export default function HistoryScreen() {
     );
   };
 
+  const timeRanges: TimeRange[] = [
+    '5S', '30S', '1M', '5M', '15M', '30M',
+    '1H', '6H', '12H', '24H',
+    '3D', '7D', '14D', '30D',
+    '90D', '6Mo', '1Y', '5Y'
+  ];
+
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.rangeSelector}>
-        {(['1H', '6H', '24H', '7D', '30D'] as TimeRange[]).map((range) => (
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.rangeSelector}
+        contentContainerStyle={styles.rangeSelectorContent}
+      >
+        {timeRanges.map((range) => (
           <TouchableOpacity
             key={range}
             style={[
@@ -138,7 +206,7 @@ export default function HistoryScreen() {
             </Text>
           </TouchableOpacity>
         ))}
-      </View>
+      </ScrollView>
 
       {renderChart('CO₂ Levels', 'co2', 'rgba(244, 67, 54, 1)')}
       {renderChart('VOC Index', 'voc', 'rgba(255, 152, 0, 1)')}
@@ -159,17 +227,23 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   rangeSelector: {
-    flexDirection: 'row',
     marginBottom: 24,
+    maxHeight: 48,
+  },
+  rangeSelectorContent: {
     backgroundColor: '#1E1E1E',
     borderRadius: 8,
     padding: 4,
+    flexDirection: 'row',
+    gap: 4,
   },
   rangeButton: {
-    flex: 1,
     paddingVertical: 8,
+    paddingHorizontal: 12,
     alignItems: 'center',
+    justifyContent: 'center',
     borderRadius: 6,
+    minWidth: 50,
   },
   rangeButtonActive: {
     backgroundColor: '#2196F3',
