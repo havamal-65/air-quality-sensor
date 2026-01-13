@@ -11,7 +11,7 @@ let Characteristic: any;
 
 if (!IS_WEB) {
   try {
-    const ble = require('react-native-ble-plx');
+    const ble = require('@sfourdrinier/react-native-ble-plx');
     BleManager = ble.BleManager;
     Device = ble.Device;
     Characteristic = ble.Characteristic;
