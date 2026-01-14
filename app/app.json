@@ -22,8 +22,14 @@
         "BLUETOOTH_ADMIN",
         "BLUETOOTH_CONNECT",
         "BLUETOOTH_SCAN",
+        "ACCESS_FINE_LOCATION",
+        "BLUETOOTH",
+        "BLUETOOTH_ADMIN",
+        "BLUETOOTH_CONNECT",
+        "BLUETOOTH_SCAN",
         "ACCESS_FINE_LOCATION"
-      ]
+      ],
+      "package": "com.anonymous.airsenseapp"
     },
     "web": {
       "bundler": "metro"

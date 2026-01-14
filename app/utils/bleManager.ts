@@ -43,7 +43,12 @@ class BLEService {
         console.log('Web Bluetooth is supported!');
       }
     } else if (BleManager) {
-      this.manager = new BleManager();
+      try {
+        this.manager = new BleManager();
+      } catch (e) {
+        console.warn('BLE native module not available (Expo Go), using demo mode');
+        this.demoMode = true;
+      }
     } else {
       console.warn('No BLE support available, using demo mode');
       this.demoMode = true;
