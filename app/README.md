@@ -1,191 +1,71 @@
-# AirSense Mobile App
+# AirSense - Air Quality Monitor
 
-React Native mobile application for the AirSense wearable air quality sensor.
+Monitor CO2, VOC, NOx, temperature, and humidity in real-time with your wearable sensor.
 
-## Features
+## How to Use
 
-- **Real-time Monitoring:** Live sensor data updates via BLE
-- **Visual Dashboard:** Color-coded air quality indicators
-- **Historical Charts:** Track trends over time (1H to 30D)
-- **Smart Alerts:** Push notifications for critical air quality levels
-- **Recommendations:** Context-aware suggestions for improving air quality
-- **Customizable Settings:** Adjust alert thresholds and preferences
+### Option 1: Web Browser (Easiest)
 
-## Tech Stack
+1. Open https://havamal-65.github.io/air-quality-sensor on your phone
+2. Tap "Connect Sensor"
+3. Select your AirSense device from the list
+4. View real-time air quality data
 
-- **Framework:** React Native with Expo
-- **State Management:** Zustand
-- **BLE Communication:** react-native-ble-plx
-- **Charts:** react-native-chart-kit
-- **Navigation:** Expo Router
-- **Storage:** AsyncStorage
+**Works on:**
+- ✅ Android (Chrome or Edge browser)
+- ✅ Desktop computers (demo mode only)
+- ❌ iPhone (demo mode only - Apple blocks Bluetooth in browsers)
 
-## Prerequisites
+### Option 2: Expo Go App (Full Features)
 
-1. **Node.js** (v18 or later)
-2. **npm** or **yarn**
-3. **Expo CLI:**
-   ```bash
-   npm install -g expo-cli
-   ```
-4. **Expo Go app** on your phone (for testing)
-   - [iOS App Store](https://apps.apple.com/app/expo-go/id982107779)
-   - [Google Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent)
+1. Install "Expo Go" from App Store (iPhone) or Play Store (Android)
+2. Ask the app owner to start the development server
+3. Scan the QR code shown on their computer
+4. App launches with full Bluetooth support
 
-## Installation
+**Works on:**
+- ✅ iPhone and iPad
+- ✅ Android phones and tablets
 
-1. Install dependencies:
-   ```bash
-   cd app
-   npm install
-   ```
+### Option 3: Standalone App (Not Available Yet)
 
-2. Start the development server:
-   ```bash
-   npm start
-   ```
+A standalone app that works anywhere is coming soon.
 
-3. Scan the QR code with:
-   - **iOS:** Camera app
-   - **Android:** Expo Go app
+## What You See
 
-## Project Structure
-
-```
-app/
-├── app/                    # Expo Router screens
-│   ├── (tabs)/            # Bottom tab navigation
-│   │   ├── index.tsx      # Home/Dashboard screen
-│   │   ├── history.tsx    # Historical data charts
-│   │   ├── recommendations.tsx  # Tips and alerts
-│   │   └── settings.tsx   # App settings
-│   └── connection.tsx     # BLE device connection
-├── components/            # Reusable UI components
-│   ├── SensorCard.tsx     # Individual sensor display
-│   ├── OverallScore.tsx   # Air quality score widget
-│   ├── MiniChart.tsx      # Dashboard mini chart
-│   └── AlertCard.tsx      # Alert notification card
-├── store/                 # Zustand state management
-│   └── useSensorStore.ts  # Global app state
-├── utils/                 # Utility functions
-│   ├── bleManager.ts      # BLE communication logic
-│   └── notifications.ts   # Push notification handlers
-├── constants/             # App constants
-│   ├── ble.ts            # BLE UUIDs and config
-│   └── thresholds.ts     # Air quality thresholds
-└── types/                # TypeScript type definitions
-    └── sensor.ts         # Sensor data types
-```
-
-## BLE Communication
-
-The app connects to the AirSense device using Bluetooth Low Energy (BLE).
-
-### Service UUIDs
-
-- **Environmental Sensing Service:** `0000181A-0000-1000-8000-00805f9b34fb`
-  - CO₂: `00002BD2-0000-1000-8000-00805f9b34fb`
-  - Temperature: `00002A6E-0000-1000-8000-00805f9b34fb`
-  - Humidity: `00002A6F-0000-1000-8000-00805f9b34fb`
-
-- **Custom Service:** `12345678-1234-5678-1234-56789abcdef0`
-  - VOC Index: `12345678-1234-5678-1234-56789abcdef1`
-  - NOx Index: `12345678-1234-5678-1234-56789abcdef2`
-
-### Data Formats
-
-- **CO₂:** uint16 (ppm)
-- **Temperature:** int16 (°C × 100)
-- **Humidity:** uint16 (% × 100)
-- **VOC/NOx:** uint16 (index 0-500)
-
-## Permissions
-
-### iOS
-
-Add to `Info.plist`:
-```xml
-<key>NSBluetoothAlwaysUsageDescription</key>
-<string>This app needs Bluetooth to connect to your AirSense device.</string>
-```
-
-### Android
-
-Required in `AndroidManifest.xml`:
-- `BLUETOOTH`
-- `BLUETOOTH_ADMIN`
-- `BLUETOOTH_CONNECT`
-- `BLUETOOTH_SCAN`
-- `ACCESS_FINE_LOCATION`
-
-## Building for Production
-
-### iOS
-
-```bash
-npm install -g eas-cli
-eas login
-eas build --platform ios
-```
-
-### Android
-
-```bash
-eas build --platform android
-```
-
-## Testing Without Hardware
-
-For development without a physical AirSense device:
-
-1. Modify `utils/bleManager.ts` to use mock data
-2. Uncomment the mock data generator in `store/useSensorStore.ts`
-3. Use the connection simulator in dev mode
+- **Air Quality Score**: Overall rating from 0-100
+- **Live Readings**: CO2, VOC, NOx, Temperature, Humidity
+- **History Charts**: View trends over 1 hour to 30 days
+- **Recommendations**: Tips to improve your air quality
+- **Alerts**: Notifications when levels are unhealthy
 
 ## Troubleshooting
 
-### BLE Connection Issues
+**"Can't connect to device"**
+- Make sure Bluetooth is turned on
+- Keep sensor within 30 feet
+- Try refreshing the page
 
-- Ensure Bluetooth is enabled on your phone
-- Check that location services are enabled (Android)
-- Keep the AirSense device within 10m range
-- Restart the app and try reconnecting
+**"Demo mode" message**
+- You're seeing simulated data
+- Use Android Chrome/Edge for real data
+- Or use Expo Go app for full features
 
-### App Not Updating
+**App shows old data**
+- Pull down to refresh
+- Reconnect to sensor
 
-- Shake your device to open the developer menu
-- Select "Reload" or press `r` in the terminal
+## Air Quality Levels
 
-### Build Errors
+| CO2 Level | What it Means |
+|-----------|---------------|
+| <600 ppm | Excellent - Fresh air |
+| 600-800 | Good - Normal indoor |
+| 800-1000 | Moderate - Consider ventilation |
+| 1000-1500 | Poor - Open windows |
+| >1500 | Bad - Ventilate immediately |
 
-```bash
-# Clear cache and reinstall
-rm -rf node_modules
-npm install
-expo start -c
-```
+## Questions?
 
-## Development Tips
-
-1. **Hot Reload:** Changes appear instantly in Expo Go
-2. **Debug Menu:** Shake device or press `Cmd+D` (iOS) / `Cmd+M` (Android)
-3. **Logs:** Use `console.log()` - visible in terminal
-4. **Redux DevTools:** Install `react-native-debugger` for state inspection
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## License
-
-MIT
-
-## Support
-
-For issues and questions:
-- Create an issue on GitHub
-- Email: support@airsense.example.com
+- Web app: https://havamal-65.github.io/air-quality-sensor
+- Source code: https://github.com/havamal-65/air-quality-sensor
