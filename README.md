@@ -74,17 +74,53 @@ pio device monitor     # View serial output
 **Working Features:**
 - ✅ SCD41 CO2/Temperature/Humidity sensor readings
 - ✅ BLE advertising and communication
-- ✅ React Native mobile app with Expo
+- ✅ React Native mobile app with Expo SDK 54
 - ✅ Real-time data transmission over BLE
 - ✅ Web demo deployed to GitHub Pages
+- ✅ Web Bluetooth support (Android/Desktop browsers)
 - ✅ Historical data charts and alerts
 - ✅ Demo mode for testing without hardware
+- ✅ Android development build ready
+
+**Technology Stack:**
+- Expo SDK 54.0.0
+- React Native 0.81.5
+- React 19.1.0
+- Expo Router 6.0.21
+- BLE Library: @sfourdrinier/react-native-ble-plx (RN 0.81 compatible)
 
 **Live Demos:**
-- Web App: https://havamal-65.github.io/air-quality-sensor (demo mode)
-- Mobile: Use Expo Go to scan QR code for real BLE connection
+- 🌐 **Web App**: https://havamal-65.github.io/air-quality-sensor
+  - ✅ Works on Android (Chrome/Edge) with real BLE
+  - ✅ Works on Desktop with demo mode
+  - ⚠️ iOS Safari: Demo mode only (Apple blocks Web Bluetooth)
+- 📱 **Mobile (Expo Go)**: Run `npm start` and scan QR code
+  - ✅ Full BLE support on iOS and Android
+  - ⚠️ Requires computer running
+
+**How to Use:**
+
+1. **Web Browser (No Install Required)**
+   - Open https://havamal-65.github.io/air-quality-sensor on Android Chrome/Edge
+   - Tap "Connect Sensor" and select your AirSense device
+   - Real-time data appears instantly
+
+2. **Expo Go App (Development)**
+   ```bash
+   cd app
+   npm install
+   npm start
+   ```
+   - Scan QR code with Expo Go app
+   - Full native BLE support
+
+3. **Standalone App (Coming Soon)**
+   - Build with EAS: `npx eas-cli build --platform ios/android`
+   - Install via TestFlight (iOS) or APK (Android)
+   - Works anywhere without computer
 
 **Next Steps:**
+- Build standalone iOS/Android apps with EAS
 - Connect SGP41 VOC/NOx sensor (Phase 3)
 - See `firmware/PHASE2-BLE-INSTRUCTIONS.md` for detailed setup
 

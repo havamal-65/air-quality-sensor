@@ -13,8 +13,10 @@
       "supportsTablet": true,
       "infoPlist": {
         "NSBluetoothAlwaysUsageDescription": "This app needs Bluetooth to connect to your AirSense device.",
-        "NSBluetoothPeripheralUsageDescription": "This app needs Bluetooth to connect to your AirSense device."
-      }
+        "NSBluetoothPeripheralUsageDescription": "This app needs Bluetooth to connect to your AirSense device.",
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "bundleIdentifier": "com.anonymous.airsenseapp"
     },
     "android": {
       "permissions": [
@@ -33,6 +35,11 @@
     },
     "web": {
       "bundler": "metro"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "bfe550dc-d808-48bf-83f1-819be5ad21c4"
+      }
     }
   }
 }
