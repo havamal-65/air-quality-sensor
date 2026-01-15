@@ -97,32 +97,93 @@ pio device monitor     # View serial output
 - 📱 **Mobile (Expo Go)**: Run `npm start` and scan QR code
   - ✅ Full BLE support on iOS and Android
   - ⚠️ Requires computer running
+- 🍎 **iOS Native App**: See [iOS Installation](#ios-installation)
+  - ✅ Full BLE support without computer
+  - ✅ Optimized for iPhone and iPad
+  - ✅ TestFlight and App Store ready
+
+## Installation
+
+### iOS Installation
+
+**For end users:**
+1. Download **Expo Go** from the App Store (free)
+2. Contact the developer for the Expo project QR code
+3. Scan QR code to launch app with full BLE support
+
+**For iOS developers on Mac:**
+See [iOS-SETUP.md](iOS-SETUP.md) for complete development guide including:
+- Development environment setup
+- Building for iOS simulator and physical devices
+- TestFlight beta distribution
+- App Store submission process
+
+Quick start for developers:
+```bash
+cd app
+npm install
+
+# Run in iOS simulator
+npm run ios
+
+# Or run on connected iPhone
+npm run ios:device
+
+# Build for TestFlight/App Store
+npm run build:ios:preview
+npm run submit:ios
+```
+
+**Bundle Identifier:** `com.havamal65.airsenseapp`
+
+### Android Installation
+
+```bash
+cd app
+npm install
+npm run android
+```
+
+### Web App (Browser)
+
+No installation required:
+- **Android/Desktop:** Visit https://havamal-65.github.io/air-quality-sensor
+- **iOS Safari:** Demo mode only (download native app for BLE)
 
 **How to Use:**
 
-1. **Web Browser (No Install Required)**
-   - Open https://havamal-65.github.io/air-quality-sensor on Android Chrome/Edge
+1. **iOS Native App (Recommended for iPhone users)**
+   - Install Expo Go from App Store
+   - Scan project QR code from developer
+   - Full BLE support with native performance
+   - Works offline without computer
+
+   **Or build yourself on Mac:**
+   - See [iOS-SETUP.md](iOS-SETUP.md) for complete guide
+   - Requires Apple Developer account ($99/year)
+   - Deploy to TestFlight or App Store
+
+2. **Web Browser (Android/Desktop)**
+   - Open https://havamal-65.github.io/air-quality-sensor on Chrome/Edge
    - Tap "Connect Sensor" and select your AirSense device
    - Real-time data appears instantly
+   - iOS Safari shows demo mode only
 
-2. **Expo Go App (Development)**
+3. **Development Mode (Any Platform)**
    ```bash
    cd app
    npm install
    npm start
    ```
-   - Scan QR code with Expo Go app
+   - Scan QR code with Expo Go app (iOS/Android)
+   - Or press `i` for iOS simulator (Mac only)
+   - Or press `a` for Android emulator
    - Full native BLE support
 
-3. **Standalone App (Coming Soon)**
-   - Build with EAS: `npx eas-cli build --platform ios/android`
-   - Install via TestFlight (iOS) or APK (Android)
-   - Works anywhere without computer
-
 **Next Steps:**
-- Build standalone iOS/Android apps with EAS
+- **iOS developers:** See [iOS-SETUP.md](iOS-SETUP.md) for build instructions
 - Connect SGP41 VOC/NOx sensor (Phase 3)
-- See `firmware/PHASE2-BLE-INSTRUCTIONS.md` for detailed setup
+- See `firmware/PHASE2-BLE-INSTRUCTIONS.md` for hardware setup
 
 ## Air Quality Thresholds
 
