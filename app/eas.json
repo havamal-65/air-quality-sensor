@@ -6,24 +6,13 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal",
-      "ios": {
-        "simulator": true
-      }
+      "distribution": "internal"
     },
     "preview": {
-      "distribution": "internal",
-      "ios": {
-        "simulator": false,
-        "bundleIdentifier": "com.havamal65.airsenseapp"
-      }
+      "distribution": "internal"
     },
     "production": {
-      "autoIncrement": true,
-      "ios": {
-        "simulator": false,
-        "bundleIdentifier": "com.havamal65.airsenseapp"
-      }
+      "autoIncrement": true
     }
   },
   "submit": {

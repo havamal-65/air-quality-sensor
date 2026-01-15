@@ -12,12 +12,11 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "NSBluetoothAlwaysUsageDescription": "This app needs Bluetooth to connect to your AirSense device and monitor air quality in real-time.",
-        "NSBluetoothPeripheralUsageDescription": "This app needs Bluetooth to connect to your AirSense device and monitor air quality in real-time.",
-        "NSLocationWhenInUseUsageDescription": "Location access is required for Bluetooth device scanning on iOS.",
+        "NSBluetoothAlwaysUsageDescription": "This app needs Bluetooth to connect to your AirSense device.",
+        "NSBluetoothPeripheralUsageDescription": "This app needs Bluetooth to connect to your AirSense device.",
         "ITSAppUsesNonExemptEncryption": false
       },
-      "bundleIdentifier": "com.havamal65.airsenseapp"
+      "bundleIdentifier": "com.anonymous.airsenseapp"
     },
     "android": {
       "permissions": [
@@ -32,7 +31,7 @@
         "BLUETOOTH_SCAN",
         "ACCESS_FINE_LOCATION"
       ],
-      "package": "com.havamal65.airsenseapp"
+      "package": "com.anonymous.airsenseapp"
     },
     "web": {
       "bundler": "metro"

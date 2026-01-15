@@ -7,14 +7,8 @@
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "ios:simulator": "expo run:ios",
-    "ios:device": "expo run:ios --device",
     "web": "expo start --web",
     "build:web": "expo export -p web",
-    "build:ios": "eas build --platform ios --profile development",
-    "build:ios:preview": "eas build --platform ios --profile preview",
-    "build:ios:prod": "eas build --platform ios --profile production",
-    "submit:ios": "eas submit --platform ios",
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {

@@ -6,31 +6,20 @@ import {
   TouchableOpacity,
   FlatList,
   ActivityIndicator,
-  Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Device } from 'react-native-ble-plx';
 import { useSensorStore } from '../store/useSensorStore';
 import { bleService } from '../utils/bleManager';
 import { BLE_CONFIG } from '../constants/ble';
-import iOSBanner from '../components/iOSBanner';
 
 export default function ConnectionScreen() {
   const router = useRouter();
   const [isScanning, setIsScanning] = useState(false);
   const [devices, setDevices] = useState<Device[]>([]);
   const [connecting, setConnecting] = useState<string | null>(null);
-  const [showIOSBanner, setShowIOSBanner] = useState(false);
 
   const setDevice = useSensorStore((state) => state.setDevice);
-
-  // Check if running on iOS web (Safari) - Web Bluetooth not supported
-  useEffect(() => {
-    const isIOSSafari = Platform.OS === 'web' &&
-      /iPad|iPhone|iPod/.test(navigator.userAgent) &&
-      !(window as any).MSStream;
-    setShowIOSBanner(isIOSSafari);
-  }, []);
 
   useEffect(() => {
     startScan();
@@ -153,8 +142,6 @@ export default function ConnectionScreen() {
         <Text style={styles.icon}>🔵</Text>
         <Text style={styles.title}>Connect to AirSense Device</Text>
       </View>
-
-      <iOSBanner visible={showIOSBanner} />
 
       {isScanning && (
         <View style={styles.scanningCard}>
