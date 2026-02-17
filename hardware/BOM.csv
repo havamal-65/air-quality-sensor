@@ -1,0 +1,31 @@
+Reference,Quantity,Value,Part Number,Description,Footprint,Supplier,Supplier Part #,Unit Price,Extended Price,Notes,Status
+U1,1,ESP32-C3,Seeed XIAO ESP32-C3,MCU Module with BLE and USB-C,Module:Seeed_XIAO,Seeed Studio,102010328,$5.00,$5.00,Already have,OWNED
+U2,1,SCD41,Sensirion SCD41,CO2/Temperature/Humidity Sensor,Sensor:Sensirion_SCD4x,Adafruit,5190,$49.95,$49.95,Already have,OWNED
+U3,1,SGP41,Sensirion SGP41,VOC and NOx Index Sensor,Sensor:Sensirion_SGP41,Adafruit,4829,$21.95,$21.95,Need to order,NEED
+U4,1,SSD1306,0.96" OLED I2C,128x64 OLED Display Module,Display_OLED:OLED_128x64_0.96,Generic/Amazon,N/A,$5.95,$5.95,Need to order,NEED
+U5,1,TP4056,TP4056 Module,LiPo Battery Charger Module,Module:TP4056,Generic/Amazon,N/A,$1.00,$1.00,Or use discrete IC,NEED
+BT1,1,LiPo 500mAh,3.7V LiPo,500mAh Lithium Polymer Battery,Battery:BatteryHolder_LiPo_JST_PH,Adafruit,1578,$6.95,$6.95,JST connector included,NEED
+R1,1,4.7kΩ,Generic,I2C Pullup - SDA,Resistor_SMD:R_0603_1608Metric,Digikey/LCSC,N/A,$0.10,$0.10,±5% tolerance,NEED
+R2,1,4.7kΩ,Generic,I2C Pullup - SCL,Resistor_SMD:R_0603_1608Metric,Digikey/LCSC,N/A,$0.10,$0.10,±5% tolerance,NEED
+R3,1,1.2kΩ,Generic,TP4056 Charge Current Setting,Resistor_SMD:R_0603_1608Metric,Digikey/LCSC,N/A,$0.10,$0.10,Sets 1A charge current,NEED
+R4,1,1kΩ,Generic,LED Current Limit,Resistor_SMD:R_0603_1608Metric,Digikey/LCSC,N/A,$0.10,$0.10,For status LEDs,NEED
+C1,1,100nF,Generic,Decoupling Cap - ESP32,Capacitor_SMD:C_0603_1608Metric,Digikey/LCSC,N/A,$0.10,$0.10,Ceramic X7R,NEED
+C2,1,100nF,Generic,Decoupling Cap - SCD41,Capacitor_SMD:C_0603_1608Metric,Digikey/LCSC,N/A,$0.10,$0.10,Ceramic X7R,NEED
+C3,1,100nF,Generic,Decoupling Cap - SGP41,Capacitor_SMD:C_0603_1608Metric,Digikey/LCSC,N/A,$0.10,$0.10,Ceramic X7R,NEED
+C4,1,10μF,Generic,Power Supply Filter,Capacitor_SMD:C_0805_2012Metric,Digikey/LCSC,N/A,$0.20,$0.20,Ceramic X7R,NEED
+LED1,1,Red LED,Generic,Charging Indicator,LED_SMD:LED_0805_2012Metric,Digikey/LCSC,N/A,$0.15,$0.15,Red 2V 20mA,NEED
+LED2,1,Green LED,Generic,Power Indicator,LED_SMD:LED_0805_2012Metric,Digikey/LCSC,N/A,$0.15,$0.15,Green 2.2V 20mA,NEED
+J1,1,JST PH 2-pin,JST PH-2,Battery Connector,Connector_JST:JST_PH_2pin,Digikey/LCSC,S2B-PH-K-S,$0.50,$0.50,Through-hole or SMT,NEED
+-,1,Custom PCB,80x60mm 2-layer,Printed Circuit Board,N/A,JLCPCB/PCBWay,N/A,$5.00,$5.00,Green solder mask,NEED
+-,4,M2.5 Standoff,5mm,PCB Mounting Hardware,N/A,Generic/Amazon,N/A,$0.10,$0.40,For case assembly,OPTIONAL
+,,,,,,,,,,,
+,,,,,,,SUBTOTAL:,$97.45,,Components you have
+,,,,,,,NEEDED:,$42.95,,Components to order
+,,,,,,,TOTAL:,$140.40,,Complete project cost
+,,,,,,,,,,,
+NOTES:,,,,,,,,,,,
+"- You already have U1 (ESP32-C3) and U2 (SCD41), valued at $54.95",,,,,,,,,,,
+"- Priority purchases: U3 (SGP41), U4 (OLED), BT1 (Battery), U5 (TP4056)",,,,,,,,,,,
+"- Passive components (resistors, caps, LEDs) can be purchased as assortment kits for ~$10",,,,,,,,,,,
+"- PCB fabrication from JLCPCB is ~$5 for 5 pieces (2-5 day turnaround)",,,,,,,,,,,
+"- Consider ordering 5 PCBs to have spares for testing and iterations",,,,,,,,,,,

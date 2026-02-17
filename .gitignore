@@ -65,3 +65,22 @@ app/node_modules/
 app/.expo/
 app/dist/
 app/web-build/
+
+# KiCad
+hardware/kicad/*.lck
+hardware/kicad/*-backups/
+hardware/kicad/*.bak
+hardware/kicad/*-bak
+hardware/kicad/*.backup
+hardware/kicad/fp-info-cache
+hardware/kicad/*.rpt
+hardware/kicad/erc_report.json
+hardware/kicad/freerouting.dsn
+hardware/kicad/freerouting.ses
+
+# Hardware scripts temp files
+hardware/scripts/*.png
+
+# Temp files
+tmpclaude-*
+nul
