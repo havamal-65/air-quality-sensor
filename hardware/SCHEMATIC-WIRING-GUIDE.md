@@ -1,10 +1,14 @@
 # Schematic Wiring Guide - Air Quality Sensor
 
-## Status: Manual Wiring Required
+## Status: Legacy Manual Wiring Guide
+
+> Note (2026-02-21): This document is kept for legacy/manual workflow reference.
+> The current MCP-generated KiCad design lives in `hardware/kicad_mcp/` and includes
+> a populated schematic and placed PCB. See `hardware/kicad_mcp/README.md`.
 
 The schematic file `hardware/kicad/air-quality-sensor.kicad_sch` currently contains all the component symbols but **no wire connections**. This guide will walk you through completing the schematic wiring in KiCad.
 
-**Why Manual Wiring?**: KiCad 9.0.7 on Windows doesn't expose the pcbnew Python module needed by the KiCad MCP Server. The most reliable approach is to complete the wiring manually in the KiCad GUI, which takes about 15-20 minutes.
+**Why Manual Wiring?**: For this legacy path, manual wiring in KiCad GUI is the fallback workflow.
 
 ---
 

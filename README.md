@@ -35,6 +35,7 @@ air-quality-sensor/
 │   ├── src/
 │   └── lib/
 ├── app/               # Mobile app (React Native/Flutter)
+├── hardware/          # KiCad project, PCB docs, BOM
 ├── enclosure/         # 3D printable case files
 └── docs/              # Documentation and wiring diagrams
 ```
@@ -123,6 +124,15 @@ pio device monitor     # View serial output
 - Build standalone iOS/Android apps with EAS
 - Connect SGP41 VOC/NOx sensor (Phase 3)
 - See `firmware/PHASE2-BLE-INSTRUCTIONS.md` for detailed setup
+
+### Hardware Design Status (KiCad MCP)
+
+- KiCad project path: `hardware/kicad_mcp/air-quality-sensor-mcp.kicad_pro`
+- Schematic: populated and wired (`16` symbols), ERC passes with `0` errors / `0` warnings
+- PCB: `16` components placed and aligned with schematic
+- Routing: not started yet (`0` tracks)
+- Details: `hardware/kicad_mcp/README.md`
+- Lessons learned: `docs/LESSONS-LEARNED.md`
 
 ## Air Quality Thresholds
 

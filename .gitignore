@@ -77,6 +77,20 @@ hardware/kicad/*.rpt
 hardware/kicad/erc_report.json
 hardware/kicad/freerouting.dsn
 hardware/kicad/freerouting.ses
+hardware/kicad_mcp/*.lck
+hardware/kicad_mcp/*-backups/
+hardware/kicad_mcp/.kicad_mcp_backups/
+hardware/kicad_mcp/*.bak
+hardware/kicad_mcp/*-bak
+hardware/kicad_mcp/*.backup
+hardware/kicad_mcp/fp-info-cache
+hardware/kicad_mcp/*.rpt
+hardware/kicad_mcp/erc_report.json
+hardware/kicad_mcp/freerouting.dsn
+hardware/kicad_mcp/freerouting.ses
+
+# MCP tooling artifacts
+.kicad-mcp/
 
 # Hardware scripts temp files
 hardware/scripts/*.png

@@ -1,0 +1,24 @@
+{
+  "schematic_path": "D:\\GitHub\\Portfolio\\Projects\\air-quality-sensor\\hardware\\kicad_mcp\\air-quality-sensor-mcp.kicad_sch",
+  "pcb_path": "D:\\GitHub\\Portfolio\\Projects\\air-quality-sensor\\hardware\\kicad_mcp\\air-quality-sensor-mcp.kicad_pcb",
+  "symbols": 16,
+  "wires": 54,
+  "labels": 6,
+  "no_connects": 17,
+  "erc": {
+    "passed": true,
+    "error_count": 0,
+    "warning_count": 0
+  },
+  "compare_summary": {
+    "schematic_components": 16,
+    "pcb_components": 16,
+    "matched": 16,
+    "missing_from_pcb": 0,
+    "missing_from_schematic": 0,
+    "footprint_mismatches": 0,
+    "value_mismatches": 0
+  },
+  "pcb_components": 16,
+  "pcb_tracks": 0
+}

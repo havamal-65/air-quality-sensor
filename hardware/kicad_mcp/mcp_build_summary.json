@@ -1,0 +1,42 @@
+{
+  "project": "D:\\GitHub\\Portfolio\\Projects\\air-quality-sensor\\hardware\\kicad_mcp\\air-quality-sensor-mcp.kicad_pro",
+  "schematic": "D:\\GitHub\\Portfolio\\Projects\\air-quality-sensor\\hardware\\kicad_mcp\\air-quality-sensor-mcp.kicad_sch",
+  "pcb": "D:\\GitHub\\Portfolio\\Projects\\air-quality-sensor\\hardware\\kicad_mcp\\air-quality-sensor-mcp.kicad_pcb",
+  "component_count": 16,
+  "net_count": 1,
+  "track_count": 0,
+  "board_info": {
+    "file_path": "D:\\GitHub\\Portfolio\\Projects\\air-quality-sensor\\hardware\\kicad_mcp\\air-quality-sensor-mcp.kicad_pcb",
+    "page_size": "A4",
+    "layers": [
+      "F.Cu",
+      "B.Cu",
+      "B.SilkS",
+      "F.SilkS",
+      "B.Mask",
+      "F.Mask",
+      "Edge.Cuts"
+    ],
+    "num_components": 16,
+    "num_nets": 1,
+    "num_tracks": 0
+  },
+  "placed_refs": [
+    "U1",
+    "U2",
+    "U3",
+    "U4",
+    "U5",
+    "J1",
+    "R1",
+    "R2",
+    "R3",
+    "R4",
+    "C1",
+    "C2",
+    "C3",
+    "C4",
+    "LED1",
+    "LED2"
+  ]
+}
