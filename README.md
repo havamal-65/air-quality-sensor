@@ -128,7 +128,8 @@ pio device monitor     # View serial output
 ### Hardware Design Status (KiCad MCP)
 
 - KiCad project path: `hardware/kicad_mcp/air-quality-sensor-mcp.kicad_pro`
-- Schematic: populated and wired (`16` symbols), ERC passes with `0` errors / `0` warnings
+- Schematic: populated and explicitly wired (`16` symbols, `34` wire segments)
+- ERC (`kicad-cli`): `2` errors / `0` warnings (power-rule semantics on `USB_5V` and `BAT+`)
 - PCB: `16` components placed and aligned with schematic
 - Routing: not started yet (`0` tracks)
 - Details: `hardware/kicad_mcp/README.md`

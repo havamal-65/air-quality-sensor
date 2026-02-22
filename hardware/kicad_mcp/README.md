@@ -1,6 +1,6 @@
 # KiCad MCP Design
 
-This directory contains a clean, from-scratch KiCad design generated with KiCad MCP on 2026-02-21.
+This directory contains the KiCad MCP design iteration for this project (updated 2026-02-21/2026-02-22).
 
 ## Primary files
 - `air-quality-sensor-mcp.kicad_pro`
@@ -14,8 +14,8 @@ This directory contains a clean, from-scratch KiCad design generated with KiCad 
 - `mcp_schematic_build_summary.json` - schematic build + ERC + schematic/PCB compare summary
 
 ## Current status
-- Schematic populated and wired
-- ERC: pass (0 errors, 0 warnings)
+- Schematic populated and explicitly wired (`34` wire segments)
+- ERC (`kicad-cli`): `2` errors / `0` warnings (power-rule semantics on `USB_5V` input drive and `BAT+` power_out-to-power_out)
 - Schematic/PCB component consistency: matched (16/16)
 - PCB component placement complete
 - PCB routing: not started (tracks pending)

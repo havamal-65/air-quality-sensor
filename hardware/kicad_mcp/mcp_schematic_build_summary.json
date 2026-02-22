@@ -1,16 +1,16 @@
 {
   "schematic_path": "D:\\GitHub\\Portfolio\\Projects\\air-quality-sensor\\hardware\\kicad_mcp\\air-quality-sensor-mcp.kicad_sch",
-  "pcb_path": "D:\\GitHub\\Portfolio\\Projects\\air-quality-sensor\\hardware\\kicad_mcp\\air-quality-sensor-mcp.kicad_pcb",
   "symbols": 16,
-  "wires": 54,
-  "labels": 6,
+  "wires": 34,
+  "labels": 39,
   "no_connects": 17,
   "erc": {
-    "passed": true,
-    "error_count": 0,
+    "passed": false,
+    "error_count": 2,
     "warning_count": 0
   },
-  "compare_summary": {
+  "erc_tool": "kicad-cli 9.0.7",
+  "compare_before_sync": {
     "schematic_components": 16,
     "pcb_components": 16,
     "matched": 16,
@@ -19,6 +19,85 @@
     "footprint_mismatches": 0,
     "value_mismatches": 0
   },
-  "pcb_components": 16,
-  "pcb_tracks": 0
+  "compare_after_sync": {
+    "schematic_components": 16,
+    "pcb_components": 16,
+    "matched": 16,
+    "missing_from_pcb": 0,
+    "missing_from_schematic": 0,
+    "footprint_mismatches": 0,
+    "value_mismatches": 0
+  },
+  "critical_pin_nets": [
+    {
+      "ref": "U1",
+      "pin": "14",
+      "net": "/USB_5V"
+    },
+    {
+      "ref": "U5",
+      "pin": "1",
+      "net": "/USB_5V"
+    },
+    {
+      "ref": "U1",
+      "pin": "12",
+      "net": "/+3V3"
+    },
+    {
+      "ref": "U2",
+      "pin": "1",
+      "net": "/+3V3"
+    },
+    {
+      "ref": "U1",
+      "pin": "13",
+      "net": "/GND"
+    },
+    {
+      "ref": "U2",
+      "pin": "2",
+      "net": "/GND"
+    },
+    {
+      "ref": "U1",
+      "pin": "5",
+      "net": "/I2C_SDA"
+    },
+    {
+      "ref": "U2",
+      "pin": "4",
+      "net": "/I2C_SDA"
+    },
+    {
+      "ref": "U1",
+      "pin": "6",
+      "net": "/I2C_SCL"
+    },
+    {
+      "ref": "U2",
+      "pin": "3",
+      "net": "/I2C_SCL"
+    },
+    {
+      "ref": "J1",
+      "pin": "1",
+      "net": "/BAT+"
+    },
+    {
+      "ref": "U5",
+      "pin": "3",
+      "net": "/BAT+"
+    },
+    {
+      "ref": "U5",
+      "pin": "5",
+      "net": "/VBAT"
+    },
+    {
+      "ref": "U1",
+      "pin": "B+",
+      "net": "/VBAT"
+    }
+  ]
 }
