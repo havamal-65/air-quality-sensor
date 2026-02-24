@@ -48,6 +48,7 @@ __pycache__/
 .Python
 env/
 venv/
+.venv-kicad-mcp/
 
 # Expo
 .expo/

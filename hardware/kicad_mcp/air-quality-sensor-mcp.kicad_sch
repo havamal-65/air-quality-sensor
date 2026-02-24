@@ -701,7 +701,297 @@
     		)
     		(embedded_fonts no)
     	)
-  )  (no_connect (at 158.75 142.24) (uuid "98b7f008-36a8-48a3-9687-a73bafb45f21"))
+  
+    (symbol "power:PWR_FLAG"
+    		(power)
+    		(pin_numbers
+    			(hide yes)
+    		)
+    		(pin_names
+    			(offset 0)
+    			(hide yes)
+    		)
+    		(exclude_from_sim no)
+    		(in_bom yes)
+    		(on_board yes)
+    		(property "Reference" "#FLG"
+    			(at 0 1.905 0)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    				(hide yes)
+    			)
+    		)
+    		(property "Value" "PWR_FLAG"
+    			(at 0 3.81 0)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    			)
+    		)
+    		(property "Footprint" ""
+    			(at 0 0 0)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    				(hide yes)
+    			)
+    		)
+    		(property "Datasheet" "~"
+    			(at 0 0 0)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    				(hide yes)
+    			)
+    		)
+    		(property "Description" "Special symbol for telling ERC where power comes from"
+    			(at 0 0 0)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    				(hide yes)
+    			)
+    		)
+    		(property "ki_keywords" "flag power"
+    			(at 0 0 0)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    				(hide yes)
+    			)
+    		)
+    		(symbol "PWR_FLAG_0_0"
+    			(pin power_out line
+    				(at 0 0 90)
+    				(length 0)
+    				(name "~"
+    					(effects
+    						(font
+    							(size 1.27 1.27)
+    						)
+    					)
+    				)
+    				(number "1"
+    					(effects
+    						(font
+    							(size 1.27 1.27)
+    						)
+    					)
+    				)
+    			)
+    		)
+    		(symbol "PWR_FLAG_0_1"
+    			(polyline
+    				(pts
+    					(xy 0 0) (xy 0 1.27) (xy -1.016 1.905) (xy 0 2.54) (xy 1.016 1.905) (xy 0 1.27)
+    				)
+    				(stroke
+    					(width 0)
+    					(type default)
+    				)
+    				(fill
+    					(type none)
+    				)
+    			)
+    		)
+    		(embedded_fonts no)
+    	)
+  
+    (symbol "Connector_Generic:Conn_01x02"
+    		(pin_names
+    			(offset 1.016)
+    			(hide yes)
+    		)
+    		(exclude_from_sim no)
+    		(in_bom yes)
+    		(on_board yes)
+    		(property "Reference" "J"
+    			(at 0 2.54 0)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    			)
+    		)
+    		(property "Value" "Conn_01x02"
+    			(at 0 -5.08 0)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    			)
+    		)
+    		(property "Footprint" ""
+    			(at 0 0 0)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    				(hide yes)
+    			)
+    		)
+    		(property "Datasheet" "~"
+    			(at 0 0 0)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    				(hide yes)
+    			)
+    		)
+    		(property "Description" "Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"
+    			(at 0 0 0)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    				(hide yes)
+    			)
+    		)
+    		(property "ki_keywords" "connector"
+    			(at 0 0 0)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    				(hide yes)
+    			)
+    		)
+    		(property "ki_fp_filters" "Connector*:*_1x??_*"
+    			(at 0 0 0)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    				(hide yes)
+    			)
+    		)
+    		(symbol "Conn_01x02_1_1"
+    			(rectangle
+    				(start -1.27 1.27)
+    				(end 1.27 -3.81)
+    				(stroke
+    					(width 0.254)
+    					(type default)
+    				)
+    				(fill
+    					(type background)
+    				)
+    			)
+    			(rectangle
+    				(start -1.27 0.127)
+    				(end 0 -0.127)
+    				(stroke
+    					(width 0.1524)
+    					(type default)
+    				)
+    				(fill
+    					(type none)
+    				)
+    			)
+    			(rectangle
+    				(start -1.27 -2.413)
+    				(end 0 -2.667)
+    				(stroke
+    					(width 0.1524)
+    					(type default)
+    				)
+    				(fill
+    					(type none)
+    				)
+    			)
+    			(pin passive line
+    				(at -5.08 0 0)
+    				(length 3.81)
+    				(name "Pin_1"
+    					(effects
+    						(font
+    							(size 1.27 1.27)
+    						)
+    					)
+    				)
+    				(number "1"
+    					(effects
+    						(font
+    							(size 1.27 1.27)
+    						)
+    					)
+    				)
+    			)
+    			(pin passive line
+    				(at -5.08 -2.54 0)
+    				(length 3.81)
+    				(name "Pin_2"
+    					(effects
+    						(font
+    							(size 1.27 1.27)
+    						)
+    					)
+    				)
+    				(number "2"
+    					(effects
+    						(font
+    							(size 1.27 1.27)
+    						)
+    					)
+    				)
+    			)
+    		)
+    		(embedded_fonts no)
+    	)
+  )  (wire (pts (xy 96.52 152.4) (xy 109.22 149.86))
+    (stroke (width 0) (type default))
+    (uuid "43917e77-f52f-49b9-95d3-b706a90b02a1")
+  )
+  (wire (pts (xy 60.96 146.05) (xy 109.22 149.86))
+    (stroke (width 0) (type default))
+    (uuid "343fd4c7-95a6-4674-9232-247a51507097")
+  )
+  (symbol (lib_id "Connector_Generic:Conn_01x02") (at 101.6 149.86 0.0) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no)
+    (uuid "f8da958a-6fc1-4dda-978a-1977b9e3aec6")
+    (property "Reference" "J1" (at 101.6 147.86 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "JST_PH_2pin_Battery" (at 101.6 151.86 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "AirQuality:JST_PH_2pin_Battery" (at 101.6 153.86 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (instances
+      (project ""
+        (path "/025eedaf-9779-457c-a85c-2ea332d6b66a"
+          (reference "J1") (unit 1)
+        )
+      )
+    )
+  )
+  (symbol (lib_id "power:PWR_FLAG") (at 66.04 76.2 0.0) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no)
+    (uuid "b3c1f41c-796d-4538-acfc-d20cbe40c67a")
+    (property "Reference" "#PWR001" (at 66.04 74.2 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Value" "PWR_FLAG" (at 66.04 78.2 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (instances
+      (project ""
+        (path "/025eedaf-9779-457c-a85c-2ea332d6b66a"
+          (reference "#PWR001") (unit 1)
+        )
+      )
+    )
+  )
+  (no_connect (at 158.75 142.24) (uuid "98b7f008-36a8-48a3-9687-a73bafb45f21"))
   (no_connect (at 151.13 142.24) (uuid "478469e3-b39e-4618-a2d9-1626f95beb18"))
   (no_connect (at 158.75 137.16) (uuid "897b224a-316b-4056-ac62-52823e4ba333"))
   (no_connect (at 151.13 137.16) (uuid "65ff5172-03e8-4bea-a4f2-87eaad594109"))
@@ -1244,27 +1534,8 @@
       )
     )
   )
-  (symbol (lib_id "AirQuality_Sensors:JST_PH_2pin") (at 101.6 149.86 0.0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
-    (uuid "0e34fd54-f368-4e0d-ad71-f339b515517c")
-    (property "Reference" "J1" (at 101.6 147.86 0)
-      (effects (font (size 1.27 1.27)))
-    )
-    (property "Value" "JST_PH_2pin_Battery" (at 101.6 151.86 0)
-      (effects (font (size 1.27 1.27)))
-    )
-    (property "Footprint" "AirQuality:JST_PH_2pin_Battery" (at 101.6 153.86 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (instances
-      (project ""
-        (path "/025eedaf-9779-457c-a85c-2ea332d6b66a"
-          (reference "J1") (unit 1)
-        )
-      )
-    )
-  )
-  (symbol (lib_id "AirQuality_Sensors:TP4056_Module") (at 50.8 149.86 0.0) (unit 1)
+
+(symbol (lib_id "AirQuality_Sensors:TP4056_Module") (at 50.8 149.86 0.0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid "a06ba92c-8125-4b5f-85d6-14d90c2553b1")
     (property "Reference" "U5" (at 50.8 147.86 0)

@@ -1,0 +1,14 @@
+{
+    "$schema": "https://schemas.kicad.org/erc.v1.json",
+    "coordinate_units": "mm",
+    "date": "2026-02-23T21:40:21-0500",
+    "kicad_version": "9.0.7",
+    "sheets": [
+        {
+            "path": "/",
+            "uuid_path": "/025eedaf-9779-457c-a85c-2ea332d6b66a",
+            "violations": []
+        }
+    ],
+    "source": "air-quality-sensor-mcp.kicad_sch"
+}

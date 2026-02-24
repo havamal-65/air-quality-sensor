@@ -129,8 +129,9 @@ pio device monitor     # View serial output
 
 - KiCad project path: `hardware/kicad_mcp/air-quality-sensor-mcp.kicad_pro`
 - Schematic: populated and wired (`16` symbols), ERC passes with `0` errors / `0` warnings
-- PCB: `16` components placed and aligned with schematic
-- Routing: not started yet (`0` tracks)
+- PCB: `16` components placed, nets synced, and aligned with schematic
+- Routing: complete (`134` tracks across `26` nets), DRC passes with `0` errors / `0` warnings
+- Manufacturing outputs: Gerbers, drill, BOM, and PnP generated under `hardware/kicad_mcp/manufacturing/`
 - Details: `hardware/kicad_mcp/README.md`
 - Lessons learned: `docs/LESSONS-LEARNED.md`
 
