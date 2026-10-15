@@ -1,0 +1,28 @@
+name: "AirSense v4 ticket 05 — run A: default 60 s boot cycle, continuous, custom 15 s"
+version: 1
+author: "AirSense v4 ticket 05"
+
+steps:
+  # Boot: default cadence (60 s) loads, all four sensors init, first duty
+  # cycle runs (1 s power settle + 30 s warm-up before the first DATA line).
+  - wait-serial: "CADENCE loaded mode=60s"
+  - wait-serial: "READY"
+  - wait-serial: "DATA t="
+  - wait-serial: "CYCLE n=1"
+
+  # Continuous: ~5 s effective cycles (SCD41 periodic pace), fan stays on.
+  - write-serial: "cadence continuous\n"
+  - wait-serial: "CADENCE mode=continuous"
+  - wait-serial: "DATA t="
+  - wait-serial: "DATA t="
+  - wait-serial: "DATA t="
+  - wait-serial: "DATA t="
+
+  # Custom 15 s: not duty-cycled (below 60 s threshold), 10 s SGP41 warm-up.
+  - write-serial: "cadence custom 15\n"
+  - wait-serial: "CADENCE mode=custom 15s"
+  - wait-serial: "DATA t="
+  - wait-serial: "DATA t="
+  - wait-serial: "DATA t="
+  # Close on the CYCLE line so the last DATA line is complete in the log.
+  - wait-serial: "CYCLE n="

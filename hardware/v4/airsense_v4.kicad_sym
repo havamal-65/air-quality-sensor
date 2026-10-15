@@ -1,0 +1,251 @@
+(kicad_symbol_lib
+  (version 20241209)
+  (generator "kicad_mcp")
+  (generator_version "9.0")
+  (symbol "SGP41-D-R4"
+    (pin_names (offset 1.016))
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (property "Reference" "U"
+      (at 0 8.89 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "SGP41-D-R4"
+      (at 0 6.35 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "airsense_v4:Sensirion_SGP41_DFN-6-1EP_2.44x2.44mm_P0.8mm"
+      (at 0 -10.16 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
+    (property "Datasheet" "https://sensirion.com/products/catalog/SGP41"
+      (at 0 -12.7 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
+    (property "Description" "VOC and NOx gas sensor, I2C 0x59, DFN-6 2.44x2.44mm"
+      (at 0 -15.24 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
+    (symbol "SGP41-D-R4_0_1"
+      (rectangle
+        (start -7.62 5.08)
+        (end 7.62 -7.62)
+        (stroke (width 0.254) (type default))
+        (fill (type background))
+      )
+    )
+    (symbol "SGP41-D-R4_1_1"
+      (pin power_in line
+        (at -10.16 2.54 0)
+        (length 2.54)
+        (name "VDD" (effects (font (size 1.27 1.27))))
+        (number "1" (effects (font (size 1.27 1.27))))
+      )
+      (pin power_in line
+        (at -10.16 -5.08 0)
+        (length 2.54)
+        (name "VSS" (effects (font (size 1.27 1.27))))
+        (number "2" (effects (font (size 1.27 1.27))))
+      )
+      (pin bidirectional line
+        (at -10.16 -2.54 0)
+        (length 2.54)
+        (name "SDA" (effects (font (size 1.27 1.27))))
+        (number "3" (effects (font (size 1.27 1.27))))
+      )
+      (pin passive line
+        (at 10.16 -5.08 180)
+        (length 2.54)
+        (name "GND4" (effects (font (size 1.27 1.27))))
+        (number "4" (effects (font (size 1.27 1.27))))
+      )
+      (pin power_in line
+        (at 10.16 2.54 180)
+        (length 2.54)
+        (name "VDDH" (effects (font (size 1.27 1.27))))
+        (number "5" (effects (font (size 1.27 1.27))))
+      )
+      (pin input line
+        (at -10.16 0 0)
+        (length 2.54)
+        (name "SCL" (effects (font (size 1.27 1.27))))
+        (number "6" (effects (font (size 1.27 1.27))))
+      )
+      (pin passive line
+        (at 10.16 -2.54 180)
+        (length 2.54)
+        (name "EP" (effects (font (size 1.27 1.27))))
+        (number "7" (effects (font (size 1.27 1.27))))
+      )
+    )
+  )
+  (symbol "BMP390"
+    (pin_names (offset 1.016))
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (property "Reference" "U"
+      (at 0 11.43 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "BMP390"
+      (at 0 8.89 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "airsense_v4:Bosch_BMP390_LGA-10_2x2mm"
+      (at 0 -12.7 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
+    (property "Datasheet" "https://www.bosch-sensortec.com/products/environmental-sensors/pressure-sensors/bmp390/"
+      (at 0 -15.24 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
+    (property "Description" "Digital pressure sensor, I2C 0x76/0x77 or SPI, LGA-10 2x2mm (BMP384 drop-in compatible)"
+      (at 0 -17.78 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
+    (symbol "BMP390_0_1"
+      (rectangle
+        (start -8.89 7.62)
+        (end 8.89 -7.62)
+        (stroke (width 0.254) (type default))
+        (fill (type background))
+      )
+    )
+    (symbol "BMP390_1_1"
+      (pin power_in line
+        (at -11.43 5.08 0)
+        (length 2.54)
+        (name "VDDIO" (effects (font (size 1.27 1.27))))
+        (number "1" (effects (font (size 1.27 1.27))))
+      )
+      (pin input line
+        (at -11.43 0 0)
+        (length 2.54)
+        (name "SCK" (effects (font (size 1.27 1.27))))
+        (number "2" (effects (font (size 1.27 1.27))))
+      )
+      (pin power_in line
+        (at 0 -10.16 90)
+        (length 2.54)
+        (name "VSS" (effects (font (size 1.27 1.27))))
+        (number "3" (effects (font (size 1.27 1.27))))
+      )
+      (pin bidirectional line
+        (at -11.43 -2.54 0)
+        (length 2.54)
+        (name "SDI" (effects (font (size 1.27 1.27))))
+        (number "4" (effects (font (size 1.27 1.27))))
+      )
+      (pin input line
+        (at 11.43 0 180)
+        (length 2.54)
+        (name "SDO" (effects (font (size 1.27 1.27))))
+        (number "5" (effects (font (size 1.27 1.27))))
+      )
+      (pin input line
+        (at 11.43 2.54 180)
+        (length 2.54)
+        (name "CSB" (effects (font (size 1.27 1.27))))
+        (number "6" (effects (font (size 1.27 1.27))))
+      )
+      (pin output line
+        (at 11.43 -2.54 180)
+        (length 2.54)
+        (name "INT" (effects (font (size 1.27 1.27))))
+        (number "7" (effects (font (size 1.27 1.27))))
+      )
+      (pin power_in line
+        (at -2.54 -10.16 90)
+        (length 2.54) hide
+        (name "GND" (effects (font (size 1.27 1.27))))
+        (number "8" (effects (font (size 1.27 1.27))))
+      )
+      (pin power_in line
+        (at 2.54 -10.16 90)
+        (length 2.54) hide
+        (name "GND" (effects (font (size 1.27 1.27))))
+        (number "9" (effects (font (size 1.27 1.27))))
+      )
+      (pin power_in line
+        (at -11.43 2.54 0)
+        (length 2.54)
+        (name "VDD" (effects (font (size 1.27 1.27))))
+        (number "10" (effects (font (size 1.27 1.27))))
+      )
+    )
+  )
+  (symbol "TPS61023DRL"
+    (pin_names (offset 1.016))
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (property "Reference" "U"
+      (at 0 8.89 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "TPS61023DRL"
+      (at 0 6.35 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Package_TO_SOT_SMD:SOT-563"
+      (at 0 -10.16 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
+    (property "Datasheet" "https://www.ti.com/lit/ds/symlink/tps61023.pdf"
+      (at 0 -12.7 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
+    (property "Description" "3.7A boost converter, 0.5-5.5V in, 2.2-5.5V out, SOT-563 (DRL)"
+      (at 0 -15.24 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
+    (symbol "TPS61023DRL_0_1"
+      (rectangle
+        (start -7.62 5.08)
+        (end 7.62 -5.08)
+        (stroke (width 0.254) (type default))
+        (fill (type background))
+      )
+    )
+    (symbol "TPS61023DRL_1_1"
+      (pin input line
+        (at 10.16 -2.54 180)
+        (length 2.54)
+        (name "FB" (effects (font (size 1.27 1.27))))
+        (number "1" (effects (font (size 1.27 1.27))))
+      )
+      (pin input line
+        (at -10.16 0 0)
+        (length 2.54)
+        (name "EN" (effects (font (size 1.27 1.27))))
+        (number "2" (effects (font (size 1.27 1.27))))
+      )
+      (pin power_in line
+        (at -10.16 2.54 0)
+        (length 2.54)
+        (name "VIN" (effects (font (size 1.27 1.27))))
+        (number "3" (effects (font (size 1.27 1.27))))
+      )
+      (pin power_in line
+        (at 0 -7.62 90)
+        (length 2.54)
+        (name "GND" (effects (font (size 1.27 1.27))))
+        (number "4" (effects (font (size 1.27 1.27))))
+      )
+      (pin passive line
+        (at -10.16 -2.54 0)
+        (length 2.54)
+        (name "SW" (effects (font (size 1.27 1.27))))
+        (number "5" (effects (font (size 1.27 1.27))))
+      )
+      (pin power_out line
+        (at 10.16 2.54 180)
+        (length 2.54)
+        (name "VOUT" (effects (font (size 1.27 1.27))))
+        (number "6" (effects (font (size 1.27 1.27))))
+      )
+    )
+  )
+)

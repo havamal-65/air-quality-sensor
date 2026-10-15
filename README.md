@@ -1,14 +1,16 @@
 # Wearable Air Quality Sensor
 
-A small wearable air quality sensor that connects to a phone via Bluetooth Low Energy (BLE). Monitors CO2, VOCs, NOx, temperature, and humidity.
+A small wearable air quality sensor that connects to a phone via Bluetooth Low Energy (BLE). Monitors CO2, particulate matter (PM1.0/PM2.5/PM10), VOCs, NOx, temperature, humidity, and barometric pressure.
 
 ## Features
 
 - Real-time CO2 monitoring (400-5000 ppm)
+- Particulate matter: PM1.0 / PM2.5 / PM10 (AirSense v4)
 - VOC and NOx index detection
-- Temperature and humidity sensing
-- BLE connectivity for mobile app
-- OLED display for standalone viewing
+- Temperature, humidity, and barometric pressure sensing
+- BLE connectivity for mobile app, with on-device history sync (v4)
+- Configurable sampling cadence (continuous / 60 s / 300 s / custom, v4)
+- OLED display with button-driven pages and cadence menu
 - Portable battery power (1-2 day runtime)
 
 ## Hardware
@@ -31,13 +33,18 @@ A small wearable air quality sensor that connects to a phone via Bluetooth Low E
 ```
 air-quality-sensor/
 ├── firmware/           # ESP32-C3 firmware (PlatformIO)
-│   ├── platformio.ini
-│   ├── src/
-│   └── lib/
-├── app/               # Mobile app (React Native/Flutter)
-├── hardware/          # KiCad project, PCB docs, BOM
-├── enclosure/         # 3D printable case files
-└── docs/              # Documentation and wiring diagrams
+│   ├── platformio.ini  #   envs: seeed_xiao_esp32c3 (Phase 2), airsense_v4
+│   ├── src/            #   Phase-2 firmware
+│   ├── src/v4/         #   AirSense v4: sensor stack, cadence, BLE, OLED UI
+│   └── wokwi-v4/       #   v4 simulation: custom chip models, scenarios
+├── app/                # Mobile app (React Native / Expo)
+│   └── constants/ble-protocol.md  # authoritative v4 BLE contract
+├── hardware/           # KiCad projects, PCB docs, BOM
+│   ├── kicad_mcp/      #   v3 board (KiCad MCP design iteration)
+│   └── v4/             #   AirSense v4 rev B board + fab pack + order BOM
+├── scripts/            # ble_verify.py — v4 BLE protocol verification harness
+├── enclosure/          # 3D printable case files
+└── docs/               # Documentation and wiring diagrams
 ```
 
 ## Getting Started
@@ -65,10 +72,10 @@ pio device monitor     # View serial output
 
 - **Phase 1:** ✅ Basic sensor reading (SCD41) - COMPLETE
 - **Phase 2:** ✅ BLE communication with mobile app - COMPLETE
-- **Phase 3:** Add VOC sensor (SGP41) - READY TO START
-- **Phase 4:** Battery power system
-- **Phase 5:** OLED display
-- **Phase 6:** Enclosure design
+- **Phases 3-5** (VOC sensor, battery power, OLED) are superseded by the
+  **AirSense v4** revision below, which delivers all of them plus PM and
+  pressure sensing on a custom PCB - design and sim verification COMPLETE
+- **Next:** v4 parts order + hardware bring-up, then enclosure design
 
 ### Current Status (Phase 2 Complete)
 
@@ -125,15 +132,59 @@ pio device monitor     # View serial output
 - Connect SGP41 VOC/NOx sensor (Phase 3)
 - See `firmware/PHASE2-BLE-INSTRUCTIONS.md` for detailed setup
 
-### Hardware Design Status (KiCad MCP)
+### Hardware Design Status (KiCad MCP, v3 board)
 
 - KiCad project path: `hardware/kicad_mcp/air-quality-sensor-mcp.kicad_pro`
-- Schematic: populated and wired (`16` symbols), ERC passes with `0` errors / `0` warnings
-- PCB: `16` components placed, nets synced, and aligned with schematic
-- Routing: complete (`134` tracks across `26` nets), DRC passes with `0` errors / `0` warnings
+- Schematic: populated and wired (`19` symbols incl. PMSA003I PM sensor and 5 V boost), ERC `0` errors
+- PCB: `19` components placed, nets synced (`65` pad nets), routing complete (`160` tracks), DRC `0` errors / `0` warnings
 - Manufacturing outputs: Gerbers, drill, BOM, and PnP generated under `hardware/kicad_mcp/manufacturing/`
-- Details: `hardware/kicad_mcp/README.md`
+- Details: `hardware/kicad_mcp/README.md` and `hardware/kicad_mcp/BOARD-DESIGN-NOTES.md`
 - Lessons learned: `docs/LESSONS-LEARNED.md`
+
+## AirSense v4 (rev B) — current hardware/firmware track
+
+Full product revision designed and verified 2026-10: custom 100 × 40 mm
+2-layer board (ESP32-C3-WROOM-02, SCD41 CO2, SGP41 VOC/NOx, SEN50 PM,
+BMP384 pressure, SSD1306 OLED, USB-C, LiPo charge + 5 V boost) with the
+firmware, BLE protocol, and verification tooling to match.
+
+**Hardware (`hardware/v4/`)**
+- `airsense_v4.kicad_pro/sch/pcb` — DRC-clean board (0 errors), designed
+  end to end through KiCad MCP tools with project-local footprints for
+  SGP41 and BMP384 (`footprint-verification.md` records the datasheet
+  checks; `design-rules.md` records the PCBWay rule set)
+- `fab/` — full fab pack: Gerbers (+ PCBWay-profile zip), drill, BOM,
+  pick-and-place, STEP model
+- `order-bom.md` — priced order list (~$96/device at qty 1, live-priced
+  2026-10-13)
+
+**Firmware (`firmware/src/v4/`, PlatformIO env `airsense_v4`)**
+- Per-sensor drivers behind one `ISensorDriver` seam, staged warm-up
+  scheduler (each sensor gets exactly its own datasheet warm-up), NVS-persisted
+  sampling cadence (continuous / 60 s / 300 s / custom 10 s–24 h)
+- BLE: serves the frozen Phase-2 contract unchanged, plus v4
+  characteristics — pressure, PM (standard + full-resolution custom),
+  writable cadence, and a 720-record history ring with framed dump sync.
+  Contract documented in `app/constants/ble-protocol.md`
+- OLED UI: 4 data pages, button wake/cycle, long-press cadence menu with
+  custom-interval submenu, 30 s screen timeout; screen-on or an active BLE
+  connection forces continuous sampling, the persisted cadence returns after
+- Simulation: `firmware/wokwi-v4/` has custom Wokwi chip models
+  (SCD41/SGP41/SEN50/BMP384 register-level, power-pin gated), three scenario
+  scripts, OLED screenshot capture, and `check_cadence.py` which verifies
+  sample spacing against the firmware's own interval prints
+
+**Verification tooling**
+- `scripts/ble_verify.py` — PC-side BLE harness (Python + bleak) asserting
+  the whole protocol contract against a live device: GATT table, value
+  formats, cadence write/readback, history dump framing, and duty-cadence
+  observation via history after a disconnect gap; `--self-test` runs its
+  decoder suite with no hardware
+
+**Status:** design, firmware, and simulation verification complete
+(schematic → layout → DRC → fab pack; firmware verified in Wokwi:
+cadence spacing, NVS persistence across reboot, OLED pages/menu flows,
+BLE boot). Next: parts order and hardware bring-up with `ble_verify.py`.
 
 ## Air Quality Thresholds
 

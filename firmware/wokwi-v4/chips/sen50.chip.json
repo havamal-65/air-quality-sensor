@@ -1,0 +1,5 @@
+{
+  "name": "sen50",
+  "author": "AirSense v4 ticket 05",
+  "pins": ["SDA", "SCL", "EN", "VCC", "GND"]
+}

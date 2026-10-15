@@ -1,0 +1,101 @@
+# AirSense v4 ticket 08 — OLED pages + button + cadence menu.
+# Sim-time budget: boot cycle ~32 s + page/menu presses ~35 s + screen
+# timeout 30 s + two 10 s custom cycles ~22 s ≈ 120 s (under the free-plan
+# 5-minute connection cap, L3). Ends waiting on the CYCLE line AFTER the
+# last needed DATA line (L4: the log truncates at the final match).
+name: "AirSense v4 ticket 08 — OLED pages, button, cadence menu"
+version: 1
+author: "AirSense v4"
+steps:
+  - wait-serial: "CADENCE loaded mode=60s"
+  - wait-serial: "INIT OLED ok"
+  - wait-serial: "READY"
+  # Boot cycle completes in duty 60 s mode (~31 s warm-up)
+  - wait-serial: "CYCLE n=1"
+
+  # Short press: wake -> page 0; screen-on forces continuous
+  - set-control: { part-id: btn1, control: pressed, value: 1 }
+  - delay: 100ms
+  - set-control: { part-id: btn1, control: pressed, value: 0 }
+  - wait-serial: "UI screen=on page=0"
+  - wait-serial: "CADENCE mode=continuous interval=5500ms"
+  - delay: 1500ms
+  - take-screenshot: { part-id: oled1, save-to: shots_c/page0.png }
+
+  # Cycle pages 1..3
+  - set-control: { part-id: btn1, control: pressed, value: 1 }
+  - delay: 100ms
+  - set-control: { part-id: btn1, control: pressed, value: 0 }
+  - wait-serial: "UI page=1"
+  - delay: 500ms
+  - take-screenshot: { part-id: oled1, save-to: shots_c/page1.png }
+  - set-control: { part-id: btn1, control: pressed, value: 1 }
+  - delay: 100ms
+  - set-control: { part-id: btn1, control: pressed, value: 0 }
+  - wait-serial: "UI page=2"
+  - delay: 500ms
+  - take-screenshot: { part-id: oled1, save-to: shots_c/page2.png }
+  - set-control: { part-id: btn1, control: pressed, value: 1 }
+  - delay: 100ms
+  - set-control: { part-id: btn1, control: pressed, value: 0 }
+  - wait-serial: "UI page=3"
+  - delay: 500ms
+  - take-screenshot: { part-id: oled1, save-to: shots_c/page3.png }
+
+  # Long press: open the cadence menu (starts on persisted 60 s).
+  # Long-press prints fire at the 1.2 s mark WHILE HELD, so each wait-serial
+  # sits between press and release (wait-serial only matches text that
+  # arrives after the step starts).
+  - set-control: { part-id: btn1, control: pressed, value: 1 }
+  - wait-serial: "UI menu open"
+  - delay: 300ms
+  - set-control: { part-id: btn1, control: pressed, value: 0 }
+  - delay: 500ms
+  - take-screenshot: { part-id: oled1, save-to: shots_c/menu.png }
+
+  # Navigate to 300 s and select it (persists; deferred while screen is on)
+  - set-control: { part-id: btn1, control: pressed, value: 1 }
+  - delay: 100ms
+  - set-control: { part-id: btn1, control: pressed, value: 0 }
+  - wait-serial: "UI menu opt=300 s"
+  - set-control: { part-id: btn1, control: pressed, value: 1 }
+  - wait-serial: "UI menu select mode=300s"
+  - wait-serial: "CADENCE saved mode=300s (applies when continuous override ends)"
+  - delay: 300ms
+  - set-control: { part-id: btn1, control: pressed, value: 0 }
+  - delay: 500ms
+  - take-screenshot: { part-id: oled1, save-to: shots_c/status_300s.png }
+
+  # Reopen the menu (starts on persisted 300 s), go to Custom, pick 10 s
+  - set-control: { part-id: btn1, control: pressed, value: 1 }
+  - wait-serial: "UI menu open"
+  - delay: 300ms
+  - set-control: { part-id: btn1, control: pressed, value: 0 }
+  - delay: 300ms
+  - set-control: { part-id: btn1, control: pressed, value: 1 }
+  - delay: 100ms
+  - set-control: { part-id: btn1, control: pressed, value: 0 }
+  - wait-serial: "UI menu opt=Custom..."
+  - set-control: { part-id: btn1, control: pressed, value: 1 }
+  - wait-serial: "UI custom open"
+  - delay: 300ms
+  - set-control: { part-id: btn1, control: pressed, value: 0 }
+  - delay: 500ms
+  - take-screenshot: { part-id: oled1, save-to: shots_c/custom_menu.png }
+  - set-control: { part-id: btn1, control: pressed, value: 1 }
+  - wait-serial: "UI menu select mode=custom 10s"
+  - wait-serial: "CADENCE saved mode=custom (applies when continuous override ends)"
+  - delay: 300ms
+  - set-control: { part-id: btn1, control: pressed, value: 0 }
+
+  # Screen timeout (30 s): screen off, forcing ends, custom 10 s applies
+  - wait-serial: "UI screen=off"
+  - wait-serial: "CADENCE mode=custom 10s interval=10000ms"
+
+  # Two 10 s cycles prove the menu-selected cadence drives the scheduler
+  - wait-serial: "DATA t="
+  - wait-serial: "CYCLE n="
+  - wait-serial: "DATA t="
+  - wait-serial: "CYCLE n="
+  - wait-serial: "DATA t="
+  - wait-serial: "CYCLE n="

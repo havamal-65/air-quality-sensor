@@ -2,6 +2,13 @@
 
 Monitor CO2, VOC, NOx, temperature, and humidity in real-time with your wearable sensor.
 
+> **AirSense v4:** the device now also serves PM1.0/PM2.5/PM10, barometric
+> pressure, a writable sampling cadence, and on-device history sync. The
+> full BLE contract (UUIDs, value formats, dump framing, app guidance) is
+> in `constants/ble-protocol.md`; the shipped Phase-2 characteristics in
+> `constants/ble.ts` are unchanged. App-side support for the new
+> characteristics is a future app milestone.
+
 ## How to Use
 
 ### Option 1: Web Browser (Easiest)

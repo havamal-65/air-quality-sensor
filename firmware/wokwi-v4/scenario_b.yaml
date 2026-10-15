@@ -1,0 +1,31 @@
+name: "AirSense v4 ticket 05 — run B: 300 s mode, NVS persistence across reboot, 60 s spacing"
+version: 1
+author: "AirSense v4 ticket 05"
+
+steps:
+  # Fresh boot (NVS empty -> 60 s default).
+  - wait-serial: "CADENCE loaded mode=60s"
+  - wait-serial: "READY"
+
+  # 300 s: duty-cycled; the first cycle fires immediately on apply. The CYCLE
+  # line's next_in (~269 s) is the firmware's own 300 s timer evidence — a
+  # full 300 s gap does not fit the free-plan connection window.
+  - write-serial: "cadence 300\n"
+  - wait-serial: "CADENCE mode=300s"
+  - wait-serial: "DATA t="
+  - wait-serial: "CYCLE n="
+
+  # Persistence: reboot and confirm the 300 s setting survives (NVS).
+  - write-serial: "reboot\n"
+  - wait-serial: "REBOOT"
+  - wait-serial: "CADENCE loaded mode=300s"
+  - wait-serial: "READY"
+
+  # Back to 60 s: three cycles so DATA spacing is measurable twice at 60 s.
+  - write-serial: "cadence 60\n"
+  - wait-serial: "CADENCE mode=60s"
+  - wait-serial: "DATA t="
+  - wait-serial: "DATA t="
+  - wait-serial: "DATA t="
+  # Close on the CYCLE line so the last DATA line is complete in the log.
+  - wait-serial: "CYCLE n="

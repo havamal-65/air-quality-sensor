@@ -1,0 +1,20 @@
+[wokwi]
+version = 1
+firmware = "../.pio/build/airsense_v4/firmware.bin"
+elf = "../.pio/build/airsense_v4/firmware.elf"
+
+[[chip]]
+name = "scd41"
+binary = "chips/scd41.chip.wasm"
+
+[[chip]]
+name = "sgp41"
+binary = "chips/sgp41.chip.wasm"
+
+[[chip]]
+name = "sen50"
+binary = "chips/sen50.chip.wasm"
+
+[[chip]]
+name = "bmp384"
+binary = "chips/bmp384.chip.wasm"

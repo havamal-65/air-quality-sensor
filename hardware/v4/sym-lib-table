@@ -1,0 +1,3 @@
+(sym_lib_table
+  (lib (name "airsense_v4")(type "KiCad")(uri "${KIPRJMOD}/airsense_v4.kicad_sym")(options "")(descr ""))
+)

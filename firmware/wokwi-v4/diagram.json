@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "author": "AirSense v4 ticket 05",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-c3-devkitm-1", "id": "esp", "top": 0, "left": 0, "attrs": {} },
+    { "type": "chip-scd41", "id": "scd41", "top": -150, "left": 250, "attrs": {} },
+    { "type": "chip-sgp41", "id": "sgp41", "top": -50, "left": 250, "attrs": {} },
+    { "type": "chip-sen50", "id": "sen50", "top": 50, "left": 250, "attrs": {} },
+    { "type": "chip-bmp384", "id": "bmp384", "top": 150, "left": 250, "attrs": {} },
+    { "type": "board-ssd1306", "id": "oled1", "top": 250, "left": 250, "attrs": {} },
+    { "type": "wokwi-pushbutton", "id": "btn1", "top": 250, "left": 0, "attrs": { "color": "green" } }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "esp:4", "scd41:SDA", "gold", [] ],
+    [ "esp:5", "scd41:SCL", "blue", [] ],
+    [ "esp:4", "sgp41:SDA", "gold", [] ],
+    [ "esp:5", "sgp41:SCL", "blue", [] ],
+    [ "esp:4", "sen50:SDA", "gold", [] ],
+    [ "esp:5", "sen50:SCL", "blue", [] ],
+    [ "esp:3", "sen50:EN", "green", [] ],
+    [ "esp:4", "bmp384:SDA", "gold", [] ],
+    [ "esp:5", "bmp384:SCL", "blue", [] ],
+    [ "esp:4", "oled1:SDA", "gold", [] ],
+    [ "esp:5", "oled1:SCL", "blue", [] ],
+    [ "esp:3V3.1", "oled1:VCC", "red", [] ],
+    [ "esp:GND.1", "oled1:GND", "black", [] ],
+    [ "esp:9", "btn1:1.l", "green", [] ],
+    [ "esp:GND.1", "btn1:2.l", "black", [] ]
+  ]
+}

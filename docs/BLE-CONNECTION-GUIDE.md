@@ -1,5 +1,12 @@
 # How the App Connects to the Sensor
 
+> **AirSense v4 note:** this guide describes the Phase-2 connection flow,
+> which v4 keeps unchanged (same device name, services, and frozen
+> characteristics). The complete v4 protocol — added PM / pressure /
+> cadence / history characteristics, value formats, and the history dump
+> framing — is specified in `app/constants/ble-protocol.md`, and
+> `scripts/ble_verify.py` asserts it against a live device.
+
 ## Connection Flow Overview
 
 ```
