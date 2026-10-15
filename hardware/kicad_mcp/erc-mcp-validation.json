@@ -1,13 +1,119 @@
 {
     "$schema": "https://schemas.kicad.org/erc.v1.json",
     "coordinate_units": "mm",
-    "date": "2026-02-23T21:40:21-0500",
+    "date": "2026-06-08T14:35:17-0400",
     "kicad_version": "9.0.7",
     "sheets": [
         {
             "path": "/",
             "uuid_path": "/025eedaf-9779-457c-a85c-2ea332d6b66a",
-            "violations": []
+            "violations": [
+                {
+                    "description": "Symbol pin or wire end off connection grid",
+                    "items": [
+                        {
+                            "description": "Symbol D1 Pin 1 [K, Passive, Line]",
+                            "pos": {
+                                "x": 2.1119,
+                                "y": 0.95
+                            },
+                            "uuid": "4d68b86d-dd2d-46e7-a4eb-604303a4ea8b"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "endpoint_off_grid"
+                },
+                {
+                    "description": "Symbol pin or wire end off connection grid",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.0254 mm",
+                            "pos": {
+                                "x": 2.1119,
+                                "y": 0.95
+                            },
+                            "uuid": "c68191c9-e468-4868-8bb3-b1ff74a70853"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "endpoint_off_grid"
+                },
+                {
+                    "description": "Symbol pin or wire end off connection grid",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.0254 mm",
+                            "pos": {
+                                "x": 2.0992,
+                                "y": 1.1246
+                            },
+                            "uuid": "89838561-2c2c-41e0-8fd8-2839c2a579c0"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "endpoint_off_grid"
+                },
+                {
+                    "description": "Symbol pin or wire end off connection grid",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.0254 mm",
+                            "pos": {
+                                "x": 2.1881,
+                                "y": 0.95
+                            },
+                            "uuid": "de12926f-1b14-414e-b34d-e6db0faf69f0"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "endpoint_off_grid"
+                },
+                {
+                    "description": "Symbol pin or wire end off connection grid",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.0254 mm",
+                            "pos": {
+                                "x": 2.0992,
+                                "y": 1.15
+                            },
+                            "uuid": "fbd81bdb-cb56-40b8-ae49-4d050b901bd0"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "endpoint_off_grid"
+                },
+                {
+                    "description": "Symbol pin or wire end off connection grid",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.0254 mm",
+                            "pos": {
+                                "x": 2.0992,
+                                "y": 1.1754
+                            },
+                            "uuid": "07c40c31-550b-4c01-900e-6732f08787f4"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "endpoint_off_grid"
+                },
+                {
+                    "description": "Symbol pin or wire end off connection grid",
+                    "items": [
+                        {
+                            "description": "Symbol U7 Pin 3 [Pin_3, Passive, Line]",
+                            "pos": {
+                                "x": 2.0992,
+                                "y": 1.1754
+                            },
+                            "uuid": "eaebdd6e-21e4-406c-9ce1-dfca310008ec"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "endpoint_off_grid"
+                }
+            ]
         }
     ],
     "source": "air-quality-sensor-mcp.kicad_sch"

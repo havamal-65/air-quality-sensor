@@ -92,6 +92,20 @@ hardware/kicad_mcp/freerouting.ses
 
 # MCP tooling artifacts
 .kicad-mcp/
+.mcp.json
+*.validation_cache.json
+*.kicad_prl
+hardware/kicad_mcp/*-eval-latest.json
+
+# AirSense v4 board — local editor/recovery artifacts
+hardware/v4/*.lck
+hardware/v4/.kicad_mcp_backups/
+hardware/v4/.history/
+hardware/v4/*.clear_routes_backup.kicad_pcb
+
+# Wokwi scratch logs
+firmware/wokwi-v4/serial_test.log
+firmware/wokwi-v4/run_c_full.txt
 
 # Hardware scripts temp files
 hardware/scripts/*.png

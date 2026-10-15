@@ -234,11 +234,16 @@ Pin Configuration:
 
 | Device | Address | Binary | Configurable? |
 |--------|---------|--------|---------------|
-| SCD41 | 0x62 | 1100010 | No |
-| SGP41 | 0x59 | 1011001 | No |
+| PMSA003I | 0x12 | 0010010 | No |
 | SSD1306 | 0x3C | 0111100 | Yes (0x3C or 0x3D) |
+| SGP41 | 0x59 | 1011001 | No |
+| SCD41 | 0x62 | 1100010 | No |
 
-**No Address Conflicts!** All devices have unique I2C addresses.
+**No Address Conflicts!** All four I2C devices have unique addresses.
+
+> Note: The Adafruit PMSA003I (PM1.0 / PM2.5 / PM10 particulate matter sensor, U6)
+> shares the same SDA/SCL/3V3/GND bus as the other sensors. On the PCB it is broken
+> out to a 1×04 2.54 mm I2C header (VIN/GND/SCL/SDA) that the breakout plugs into.
 
 ### Pullup Resistor Calculation
 
@@ -255,6 +260,21 @@ Pin Configuration:
 ---
 
 ## Power Distribution
+
+> **Revision note (2026-06, MCP power respin):** The active board
+> (`kicad_mcp/`) uses a **battery-only wearable** power tree, which supersedes the
+> original diagram below. The XIAO is header-mounted (through-hole DIP), so its
+> bottom `B+`/`B-` battery pads are unreachable and are left no-connect. Current tree:
+>
+> ```
+> LiPo (J1) -> TP4056 (charge) -> VBAT -> U7 5V boost -> +5V ─┬─ PMSA003I VIN (U6)
+>                                                            └─ D1 Schottky -> XIAO 5V pin -> XIAO 3V3 reg -> +3V3 rail (sensors/OLED)
+> ```
+>
+> - U7 = fixed 5 V boost (TPS61023-class) — gives the PMSA003I its 5 V and the XIAO a
+>   stable 5 V (regulation-to-empty for max runtime). D1 (SS14) blocks XIAO-USB 5 V from
+>   back-feeding the LiPo. PMSA003I VIN moved from 3.3 V to this +5 V rail.
+> - The diagram below is the original (pre-respin) concept and is kept for reference only.
 
 ### Power Tree
 
